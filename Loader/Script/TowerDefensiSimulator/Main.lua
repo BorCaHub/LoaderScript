@@ -181,14 +181,29 @@ mkCorner(tagLabel, 6)
 local versionLabel = Instance.new("TextLabel")
 versionLabel.Name = "Ver"
 versionLabel.Size = UDim2.new(0, 120, 1, 0)
-versionLabel.Position = UDim2.new(1, -144, 0, 0)
+versionLabel.Position = UDim2.new(1, -195, 0, 0) -- Digeser ke kiri agar tidak menabrak tombol X
 versionLabel.BackgroundTransparency = 1
-versionLabel.Text = "v3.1.7"
+versionLabel.Text = "v1.0" -- Diganti dari v3.1.7
 versionLabel.TextColor3 = palette.textMuted
-versionLabel.TextSize = 20 -- Diperbesar 2x lipat (sebelumnya 11)
+versionLabel.TextSize = 20
 versionLabel.Font = Enum.Font.GothamMedium
 versionLabel.TextXAlignment = Enum.TextXAlignment.Right
 versionLabel.Parent = titleBar
+
+-- Tombol Close (X) di Atas Kanan
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "CloseBtn"
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -54, 0.5, -20)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 20
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.BorderSizePixel = 0
+closeBtn.AutoButtonColor = false
+closeBtn.Parent = titleBar
+mkCorner(closeBtn, 8)
 
 -- Dragging Logic
 local dragging, dragStart, startPos
@@ -245,7 +260,7 @@ local leftHeader = Instance.new("TextLabel")
 leftHeader.Size = UDim2.new(1, 0, 0, 50)
 leftHeader.Position = UDim2.new(0, 0, 0, 0)
 leftHeader.BackgroundTransparency = 1
-leftHeader.Text = "Scripts & Strats"
+leftHeader.Text = "Features" -- Diganti dari Scripts & Strats
 leftHeader.TextColor3 = palette.textSub
 leftHeader.TextSize = 22 -- Diperbesar 2x lipat (sebelumnya 12)
 leftHeader.Font = Enum.Font.GothamBold
@@ -320,24 +335,10 @@ btnRow.BackgroundTransparency = 1
 btnRow.BorderSizePixel = 0
 btnRow.Parent = rightPanel
 
-local closeBtn = Instance.new("TextButton")
-closeBtn.Name = "CloseBtn"
-closeBtn.Size = UDim2.new(0.47, 0, 1, 0)
-closeBtn.Position = UDim2.new(0, 0, 0, 0)
-closeBtn.BackgroundColor3 = palette.close
-closeBtn.Text = "Close"
-closeBtn.TextColor3 = palette.textSub
-closeBtn.TextSize = 20 -- Diperbesar 2x lipat (sebelumnya 13)
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.BorderSizePixel = 0
-closeBtn.AutoButtonColor = false
-closeBtn.Parent = btnRow
-mkCorner(closeBtn, 10)
-
 local executeBtn = Instance.new("TextButton")
 executeBtn.Name = "ExecBtn"
-executeBtn.Size = UDim2.new(0.47, 0, 1, 0)
-executeBtn.Position = UDim2.new(0.53, 0, 0, 0)
+executeBtn.Size = UDim2.new(1, 0, 1, 0) -- Diubah menjadi ukuran penuh karena Close pindah ke atas
+executeBtn.Position = UDim2.new(0, 0, 0, 0)
 executeBtn.BackgroundColor3 = palette.execute
 executeBtn.Text = "Execute"
 executeBtn.TextColor3 = palette.textMain
@@ -600,16 +601,16 @@ executeBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Hover effects untuk tombol bawah
+-- Hover effects untuk tombol bawah & Close X
 for _, btn in pairs({closeBtn, executeBtn}) do
     btn.MouseEnter:Connect(function()
         _ts:Create(btn, TweenInfo.new(0.15), {
-            BackgroundColor3 = (btn == executeBtn) and palette.execute:Lerp(Color3.fromRGB(0,0,0), 0.2) or palette.close:Lerp(Color3.fromRGB(0,0,0), 0.2)
+            BackgroundColor3 = (btn == executeBtn) and palette.execute:Lerp(Color3.fromRGB(0,0,0), 0.2) or Color3.fromRGB(200, 40, 40)
         }):Play()
     end)
     btn.MouseLeave:Connect(function()
         _ts:Create(btn, TweenInfo.new(0.15), {
-            BackgroundColor3 = (btn == executeBtn) and palette.execute or palette.close
+            BackgroundColor3 = (btn == executeBtn) and palette.execute or Color3.fromRGB(255, 60, 60)
         }):Play()
     end)
 end
