@@ -10,8 +10,8 @@ local _uis = game:GetService("UserInputService")
 local _rs  = game:GetService("RunService")
 local _http = game:GetService("HttpService")
 
--- Macro system state (local untuk Main.lua hook-based recording)
--- Ini TERPISAH dari _G.BorcaMacro yang dipakai recorder v1.lua
+-- Macro system state (local for Main.lua hook-based recording)
+-- This is SEPARATE from _G.BorcaMacro used by recorder v1.lua
 local _recording = false
 local _replaying = false
 local _startTick = 0
@@ -19,31 +19,31 @@ local _macroData = {}
 local _activeLoops = {}
 
 -- ================================================
--- WARNA & KONFIGURASI - CYBERPUNK NEON THEME
+-- COLORS & CONFIGURATION - OCEAN WAVE THEME
 -- ================================================
 local palette = {
-    bg        = Color3.fromRGB(8, 4, 12),
-    panel     = Color3.fromRGB(15, 8, 22),
-    sidebar   = Color3.fromRGB(12, 6, 18),
-    card      = Color3.fromRGB(20, 10, 30),
-    cardHover = Color3.fromRGB(28, 14, 42),
-    accent    = Color3.fromRGB(0, 168, 255),
-    accent2   = Color3.fromRGB(0, 255, 200),
+    bg        = Color3.fromRGB(11, 19, 43),
+    panel     = Color3.fromRGB(28, 37, 65),
+    sidebar   = Color3.fromRGB(20, 28, 50),
+    card      = Color3.fromRGB(22, 32, 55),
+    cardHover = Color3.fromRGB(35, 50, 75),
+    accent    = Color3.fromRGB(0, 180, 216),
+    accent2   = Color3.fromRGB(144, 224, 239),
     gold      = Color3.fromRGB(255, 200, 0),
-    goldDim   = Color3.fromRGB(180, 140, 0),
-    textMain  = Color3.fromRGB(255, 255, 255),
-    textSub   = Color3.fromRGB(180, 180, 200),
-    textMuted = Color3.fromRGB(120, 100, 140),
-    red       = Color3.fromRGB(255, 50, 80),
-    green     = Color3.fromRGB(0, 255, 150),
-    divider   = Color3.fromRGB(40, 20, 60),
-    execute   = Color3.fromRGB(255, 0, 128),
+    goldDim   = Color3.fromRGB(200, 160, 0),
+    textMain  = Color3.fromRGB(224, 251, 252),
+    textSub   = Color3.fromRGB(170, 215, 225),
+    textMuted = Color3.fromRGB(100, 140, 160),
+    red       = Color3.fromRGB(255, 80, 80),
+    green     = Color3.fromRGB(0, 220, 120),
+    divider   = Color3.fromRGB(30, 45, 65),
+    execute   = Color3.fromRGB(0, 180, 216),
     close     = Color3.fromRGB(60, 30, 90),
-    glow      = Color3.fromRGB(255, 0, 128),
+    glow      = Color3.fromRGB(0, 180, 216),
 }
 
 -- ================================================
--- DAFTAR FITUR
+-- FEATURE LIST
 -- ================================================
 local featureList = {
     {
@@ -79,7 +79,7 @@ local featureList = {
 }
 
 -- ================================================
--- UTILITAS GUI
+-- GUI UTILITIES
 -- ================================================
 local function mkCorner(p, r) 
     local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, r or 12); c.Parent = p; return c 
@@ -99,7 +99,7 @@ local function mkGradient(p, c1, c2, rot)
 end
 
 -- ================================================
--- HAPUS GUI LAMA
+-- Remove old GUI
 -- ================================================
 local _core = game:GetService("CoreGui")
 if _core:FindFirstChild("BorcaHubTDS") then
@@ -107,7 +107,7 @@ if _core:FindFirstChild("BorcaHubTDS") then
 end
 
 -- ================================================
--- STRUKTUR GUI UTAMA (DI-PERBESAR KE 850x550 UNTUK TEXT 2X LIPAT)
+-- MAIN GUI STRUCTURE - OCEAN WAVE DESIGN
 -- ================================================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BorcaHubTDS"
@@ -128,10 +128,10 @@ mainFrame.ClipsDescendants = false
 mainFrame.Parent = screenGui
 mkCorner(mainFrame, 16)
 
--- NEON GLOW BORDER EFFECT
+-- Neon glow border effect
 local borderGlow = mkStroke(mainFrame, palette.accent, 2)
 
--- CAHAYA CORNER GLOW DI 4 SUDUT (masing-masing 2 layer: Biru + Kuning, menjorok keluar)
+-- Corner light effects at 4 corners (Cyan + Aqua, extending outward)
 local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
     -- Layer 1 (besar)
     local g1 = Instance.new("ImageLabel")
@@ -164,11 +164,11 @@ local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2
     _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
 end
 
--- 4 SUDUT menjorok keluar: Kiri Atas (BIRU+KUNING), Kanan Atas (KUNING+BIRU), Kiri Bawah (KUNING+BIRU), Kanan Bawah (BIRU+KUNING)
-createCornerGlow("TL", 0, -25, 0, -25, palette.accent, palette.gold)
-createCornerGlow("TR", 1, 25, 0, -25, palette.gold, palette.accent)
-createCornerGlow("BL", 0, -25, 1, 25, palette.gold, palette.accent)
-createCornerGlow("BR", 1, 25, 1, 25, palette.accent, palette.gold)
+-- Corner glow at all 4 corners (Electric Cyan + Neon Aqua, extending outward)
+createCornerGlow("TL", 0, -25, 0, -25, palette.accent, palette.accent2)
+createCornerGlow("TR", 1, 25, 0, -25, palette.accent2, palette.accent)
+createCornerGlow("BL", 0, -25, 1, 25, palette.accent2, palette.accent)
+createCornerGlow("BR", 1, 25, 1, 25, palette.accent, palette.accent2)
 
 -- Intro Animation
 mainFrame.Size = UDim2.new(0, 0, 0, 0)
@@ -179,7 +179,7 @@ _ts:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirec
 }):Play()
 
 -- ================================================
--- TITLE BAR
+-- TITLE BAR - OCEAN WAVE STYLE
 -- ================================================
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
@@ -227,7 +227,7 @@ versionLabel.Font = Enum.Font.GothamMedium
 versionLabel.TextXAlignment = Enum.TextXAlignment.Right
 versionLabel.Parent = titleBar
 
--- Tombol Close (X) di Atas Kanan
+-- Close button (X) top right
 local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
 closeBtn.Size = UDim2.new(0, 40, 0, 40)
@@ -263,7 +263,7 @@ _uis.InputChanged:Connect(function(inp)
     end
 end)
 
--- Divider bawah title
+-- Title bar divider
 local titleDiv = Instance.new("Frame")
 titleDiv.Size = UDim2.new(1, -40, 0, 2)
 titleDiv.Position = UDim2.new(0, 20, 0, 70)
@@ -281,7 +281,7 @@ bodyFrame.BorderSizePixel = 0
 bodyFrame.Parent = mainFrame
 
 -- ================================================
--- PANEL KIRI: FEATURES LIST
+-- LEFT PANEL: FEATURES LIST
 -- ================================================
 local leftPanel = Instance.new("Frame")
 leftPanel.Name = "LeftPanel"
@@ -323,7 +323,7 @@ listLayout.Padding = UDim.new(0, 8)
 listLayout.Parent = scrollFrame
 
 -- ================================================
--- PANEL KANAN: DETAIL & INFO
+-- RIGHT PANEL: DETAILS & INFO
 -- ================================================
 local rightPanel = Instance.new("Frame")
 rightPanel.Name = "RightPanel"
@@ -473,7 +473,7 @@ executeBtn.Parent = btnRow
 mkCorner(executeBtn, 10)
 
 -- ================================================
--- POPUP NOTIFIKASI BESAR JIKA AKSES DITOLAK
+-- ACCESS DENIED POPUP
 -- ================================================
 local function showAccessDenied()
     local popup = Instance.new("Frame")
@@ -527,7 +527,7 @@ local function showAccessDenied()
 end
 
 -- ================================================
--- LOGIKA SELEKSI FITUR
+-- FEATURE SELECTION LOGIC
 -- ================================================
 local selectedFeature = nil
 local cardRefs = {}
@@ -571,7 +571,7 @@ local function selectFeature(feat)
 end
 
 -- ================================================
--- RENDER DAFTAR FITUR
+-- RENDER FEATURE LIST
 -- ================================================
 for i, feat in ipairs(featureList) do
     local tierColor = (feat.tier == "premium") and palette.gold or palette.accent
@@ -667,7 +667,7 @@ for i, feat in ipairs(featureList) do
 end
 
 -- ================================================
--- PROSES EKSEKUSI & NOTIFIKASI
+-- EXECUTION & NOTIFICATION LOGIC
 -- ================================================
 local function notifyPopup(msg, col)
     local nf = Instance.new("Frame")
@@ -702,7 +702,7 @@ local function notifyPopup(msg, col)
 end
 
 -- ================================================
--- LOGIKA TIMED MACRO V1 RECORDER (TIME BASED)
+-- TIMED MACRO V1 RECORDER LOGIC (TIME BASED)
 -- ================================================
 local function startMacroRecord()
     _recording = true
@@ -742,7 +742,7 @@ local function startMacroRecord()
         end)
         setreadonly(rawMT, true)
     else
-        -- Fallback jika executor tidak mendukung metatable hook (Simulasi click)
+        -- Fallback if executor doesn't support metatable hook (simulate click)
         task.spawn(function()
             while _recording do
                 local mouse = _plr:GetMouse()
@@ -823,7 +823,7 @@ local function stopPlayMacro()
     macroStatus.TextColor3 = palette.textSub
 end
 
--- Listener Event Tombol Macro
+-- Macro button listeners
 mRecBtn.MouseButton1Click:Connect(function()
     if _recording then stopMacroRecord() else startMacroRecord() end
 end)
@@ -873,7 +873,7 @@ mImportBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Execute Click
+-- Execute click
 executeBtn.MouseButton1Click:Connect(function()
     if not selectedFeature then
         notifyPopup("Select a script first!", palette.red)
@@ -882,7 +882,7 @@ executeBtn.MouseButton1Click:Connect(function()
     
     local feat = selectedFeature
     
-    -- JIKA PLAYER ADALAH FREE DAN MENCOBA MENGGUNAKAN FITUR PREMIUM
+    -- IF PLAYER IS FREE AND TRIES TO USE PREMIUM FEATURE
     if feat.tier == "premium" and _tier ~= "Premium" then
         showAccessDenied()
         return

@@ -1,6 +1,7 @@
 --[[
     BorcaHub // Loader Module
-    Custom UI Loader dengan Dark Cyber Handcrafted UI
+    Custom UI Loader with Ocean Wave Handcrafted UI
+    Dynamic Device Detection System
 ]]
 
 local _tier = "Free"
@@ -14,21 +15,24 @@ local SUPABASE_URL = "https://lvydbmdraqhyinbnwmuu.supabase.co/rest/v1/keys"
 local SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2eWRibWRyYXFoeWluYm53bXV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MTAyNzUsImV4cCI6MjA5ODI4NjI3NX0.B0Vh6wJ3_a3WgqQ006_hpZOKPHwuQzzUieDRtaewTLk"
 
 -- ================================================
--- WARNA & KONFIGURASI
+-- COLORS & CONFIGURATION - OCEAN WAVE THEME
 -- ================================================
 local palette = {
-    bg        = Color3.fromRGB(12, 12, 18),
-    panel     = Color3.fromRGB(18, 18, 28),
-    card      = Color3.fromRGB(24, 24, 38),
-    cardHover = Color3.fromRGB(32, 32, 50),
-    accent    = Color3.fromRGB(0, 168, 255),
-    gold      = Color3.fromRGB(255, 185, 0),
-    textMain  = Color3.fromRGB(235, 235, 245),
-    textSub   = Color3.fromRGB(145, 145, 165),
-    textMuted = Color3.fromRGB(90, 90, 110),
-    red       = Color3.fromRGB(255, 60, 60),
+    bg        = Color3.fromRGB(11, 19, 43),
+    panel     = Color3.fromRGB(28, 37, 65),
+    sidebar   = Color3.fromRGB(20, 28, 50),
+    card      = Color3.fromRGB(22, 32, 55),
+    cardHover = Color3.fromRGB(35, 50, 75),
+    accent    = Color3.fromRGB(0, 180, 216),
+    accent2   = Color3.fromRGB(144, 224, 239),
+    gold      = Color3.fromRGB(255, 200, 0),
+    goldDim   = Color3.fromRGB(200, 160, 0),
+    textMain  = Color3.fromRGB(224, 251, 252),
+    textSub   = Color3.fromRGB(170, 215, 225),
+    textMuted = Color3.fromRGB(100, 140, 160),
+    red       = Color3.fromRGB(255, 80, 80),
     green     = Color3.fromRGB(0, 220, 120),
-    divider   = Color3.fromRGB(38, 38, 55),
+    divider   = Color3.fromRGB(30, 45, 65),
 }
 
 local function mkCorner(p, r) 
@@ -45,7 +49,110 @@ local function mkGradient(p, c1, c2, rot)
     return g
 end
 
--- Hapus loader lama
+local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
+    local g1 = Instance.new("ImageLabel")
+    g1.Name = name .. "_1"
+    g1.Size = UDim2.new(0, 100, 0, 100)
+    g1.Position = UDim2.new(xScale, xOff, yScale, yOff)
+    g1.AnchorPoint = Vector2.new(0.5, 0.5)
+    g1.BackgroundTransparency = 1
+    g1.Image = "rbxassetid://5028857084"
+    g1.ImageColor3 = color1
+    g1.ImageTransparency = 0.25
+    g1.ZIndex = -1
+    g1.Parent = mainFrame
+    _ts:Create(g1, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
+    _ts:Create(g1, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.5}):Play()
+
+    local g2 = Instance.new("ImageLabel")
+    g2.Name = name .. "_2"
+    g2.Size = UDim2.new(0, 60, 0, 60)
+    g2.Position = UDim2.new(xScale, xOff, yScale, yOff)
+    g2.AnchorPoint = Vector2.new(0.5, 0.5)
+    g2.BackgroundTransparency = 1
+    g2.Image = "rbxassetid://5028857084"
+    g2.ImageColor3 = color2
+    g2.ImageTransparency = 0.35
+    g2.ZIndex = -1
+    g2.Parent = mainFrame
+    _ts:Create(g2, TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = -360}):Play()
+    _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
+end
+
+-- ================================================
+-- DEVICE DETECTION SYSTEM
+-- ================================================
+local function detectDeviceType()
+    -- Priority: Touch + No Keyboard = Phone
+    -- Touch + Has Keyboard = Tablet
+    -- No Touch = PC/Laptop/Mac
+    if _uis.TouchEnabled and not _uis.KeyboardEnabled then
+        return "Phone"
+    elseif _uis.TouchEnabled and _uis.KeyboardEnabled then
+        -- Check screen resolution for tablet vs laptop
+        local screenWidth = _uis:GetPlatformUIScale()
+        if screenWidth < 0.8 then
+            return "Tablet"
+        end
+    end
+    return "PC" -- Default to PC for desktop
+end
+
+local function loadDeviceConfig(deviceType)
+    -- Default config
+    local defaultConfig = {
+        frameSize = UDim2.new(0, 460, 0, 340),
+        cornerRadius = 12,
+        borderThickness = 1,
+        titleTextSize = 28,
+        subtitleTextSize = 14,
+        versionTextSize = 12,
+        tierBtnTextSize = 24,
+        tierDescTextSize = 13,
+        keyBoxTextSize = 20,
+        keySubmitTextSize = 18,
+        scriptTitleSize = 22,
+        scriptDescSize = 15,
+        comingSoonSize = 20,
+        closeBtnSize = UDim2.new(0, 30, 0, 30),
+        minBtnSize = UDim2.new(0, 30, 0, 30),
+        keyBoxHeight = 48,
+        keyButtonHeight = 42,
+        scriptButtonHeight = 55,
+        titleTextPosition = UDim2.new(0, 20, 0, 2),
+        subtitlePosition = UDim2.new(0, 20, 0, 48),
+        closeBtnPosition = UDim2.new(1, -38, 0, 6),
+        minBtnPosition = UDim2.new(1, -38, 0, 38),
+        versionPosition = UDim2.new(1, -70, 0, 10),
+        pagesPosition = UDim2.new(0, 20, 0, 62),
+        uiScale = 1,
+        deviceType = "PC"
+    }
+    
+    -- Try to load from local config files (for development)
+    local configPaths = {
+        PC = "Loader/PlayerDevice/PC.lua",
+        Phone = "Loader/PlayerDevice/Phone.lua",
+        Tablet = "Loader/PlayerDevice/Tablet.lua",
+        Laptop = "Loader/PlayerDevice/Laptop.lua",
+        Mac = "Loader/PlayerDevice/Mac.lua"
+    }
+    
+    local success, config = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/" .. configPaths[deviceType]))()
+    end)
+    
+    if success and config then
+        return config
+    end
+    
+    return defaultConfig
+end
+
+local deviceType = detectDeviceType()
+local config = loadDeviceConfig(deviceType)
+
+-- Remove old loader
 local _core = game:GetService("CoreGui")
 if _core:FindFirstChild("BorcaHubLoader") then
     _core.BorcaHubLoader:Destroy()
@@ -62,21 +169,26 @@ local mainFrame = Instance.new("Frame")
 mainFrame.Name = "Root"
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-mainFrame.Size = UDim2.new(0, 460, 0, 340)
+mainFrame.Size = config.frameSize
 mainFrame.BackgroundColor3 = palette.bg
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = false
 mainFrame.Parent = screenGui
-mkCorner(mainFrame, 12)
-mkStroke(mainFrame, palette.divider, 1)
+mkCorner(mainFrame, config.cornerRadius)
+mkStroke(mainFrame, palette.divider, config.borderThickness)
+
+createCornerGlow("TL", 0, -20, 0, -20, palette.accent, palette.accent2)
+createCornerGlow("TR", 1, 20, 0, -20, palette.accent2, palette.accent)
+createCornerGlow("BL", 0, -20, 1, 20, palette.accent2, palette.accent)
+createCornerGlow("BR", 1, 20, 1, 20, palette.accent, palette.accent2)
 
 -- ================================================
--- TOMBOL CLOSE (X) DI KANAN ATAS
+-- CLOSE BUTTON (X) TOP RIGHT
 -- ================================================
 local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -38, 0, 6)
+closeBtn.Size = config.closeBtnSize
+closeBtn.Position = config.closeBtnPosition
 closeBtn.BackgroundColor3 = palette.card
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -104,10 +216,10 @@ local function bindHover(btn, hoverColor, defaultColor)
         _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = defaultColor}):Play()
     end)
 end
-bindHover(closeBtn, Color3.fromRGB(180, 30, 30), palette.card)
+bindHover(closeBtn, Color3.fromRGB(200, 40, 40), palette.card)
 
 -- ================================================
--- TITLE CENTER + SUBTITLE
+-- CENTERED TITLE + SUBTITLE
 -- ================================================
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(1, -80, 0, 45)
@@ -144,12 +256,12 @@ versionLabel.TextXAlignment = Enum.TextXAlignment.Right
 versionLabel.Parent = mainFrame
 
 -- ================================================
--- TOMBOL MINIMIZE (DI BAWAH CLOSE X)
+-- MINIMIZE BUTTON (BELOW CLOSE X)
 -- ================================================
 local minBtn = Instance.new("TextButton")
 minBtn.Name = "MinBtn"
-minBtn.Size = UDim2.new(0, 30, 0, 30)
-minBtn.Position = UDim2.new(1, -38, 0, 38)
+minBtn.Size = config.minBtnSize
+minBtn.Position = config.minBtnPosition
 minBtn.BackgroundColor3 = palette.card
 minBtn.Text = "−"
 minBtn.TextColor3 = palette.textSub
@@ -163,7 +275,7 @@ mkStroke(minBtn, palette.divider, 1)
 local isMinimized = false
 local originalSize = mainFrame.Size
 local originalPos = mainFrame.Position
-local minimizedSize = UDim2.new(0, 460, 0, 60)
+local minimizedSize = UDim2.new(0, config.frameSize.X.Offset, 0, 60)
 
 minBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
@@ -182,7 +294,7 @@ end)
 bindHover(minBtn, palette.cardHover, palette.card)
 
 -- ================================================
--- CONTAINER PAGES
+-- PAGES CONTAINER
 -- ================================================
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -40, 1, -70)
@@ -192,7 +304,7 @@ pages.ClipsDescendants = true
 pages.Parent = mainFrame
 
 -- ================================================
--- POPUP NOTIFIKASI
+-- NOTIFICATION POPUP
 -- ================================================
 local function notify(msg, col)
     local nf = Instance.new("Frame")
@@ -227,7 +339,7 @@ local function notify(msg, col)
 end
 
 -- ================================================
--- HALAMAN 1: PILIH TIER (FREE / PREMIUM)
+-- PAGE 1: CHOOSE TIER (FREE / PREMIUM)
 -- ================================================
 local choosePage = Instance.new("Frame")
 choosePage.Size = UDim2.new(1, 0, 1, 0)
@@ -292,7 +404,7 @@ local premiumBtn = createTierBtn(
 )
 
 -- ================================================
--- HALAMAN 2: PREMIUM KEY INPUT
+-- PAGE 2: PREMIUM KEY INPUT
 -- ================================================
 local keyPage = Instance.new("Frame")
 keyPage.Size = UDim2.new(1, 0, 1, 0)
@@ -301,7 +413,7 @@ keyPage.Visible = false
 keyPage.Parent = pages
 
 local keyBox = Instance.new("TextBox")
-keyBox.Size = UDim2.new(1, 0, 0, 48)
+keyBox.Size = UDim2.new(1, 0, 0, config.keyBoxHeight)
 keyBox.Position = UDim2.new(0, 0, 0.2, 0)
 keyBox.BackgroundColor3 = palette.card
 keyBox.Text = ""
@@ -317,24 +429,24 @@ mkCorner(keyBox, 8)
 mkStroke(keyBox, palette.divider, 1)
 
 local keySubmit = Instance.new("TextButton")
-keySubmit.Size = UDim2.new(0.48, 0, 0, 42)
+keySubmit.Size = UDim2.new(0.48, 0, 0, config.keyButtonHeight)
 keySubmit.Position = UDim2.new(0.52, 0, 0.55, 0)
 keySubmit.BackgroundColor3 = palette.gold
 keySubmit.Text = "Validate Key"
 keySubmit.TextColor3 = palette.bg
-keySubmit.TextSize = 18
+keySubmit.TextSize = config.keySubmitTextSize
 keySubmit.Font = Enum.Font.GothamBold
 keySubmit.BorderSizePixel = 0
 keySubmit.Parent = keyPage
 mkCorner(keySubmit, 8)
 
 local keyBack = Instance.new("TextButton")
-keyBack.Size = UDim2.new(0.48, 0, 0, 42)
+keyBack.Size = UDim2.new(0.48, 0, 0, config.keyButtonHeight)
 keyBack.Position = UDim2.new(0, 0, 0.55, 0)
 keyBack.BackgroundColor3 = palette.card
 keyBack.Text = "Back"
 keyBack.TextColor3 = palette.textSub
-keyBack.TextSize = 18
+keyBack.TextSize = config.keySubmitTextSize
 keyBack.Font = Enum.Font.GothamBold
 keyBack.BorderSizePixel = 0
 keyBack.Parent = keyPage
@@ -342,7 +454,7 @@ mkCorner(keyBack, 8)
 mkStroke(keyBack, palette.divider, 1)
 
 -- ================================================
--- HALAMAN 3: SCRIPT CATEGORY (SCROLLABLE)
+-- PAGE 3: SCRIPT CATEGORY (SCROLLABLE)
 -- ================================================
 local categoryPage = Instance.new("Frame")
 categoryPage.Size = UDim2.new(1, 0, 1, 0)
@@ -375,7 +487,7 @@ listPadding.Parent = scrollFrame
 
 -- TDS Button
 local scriptBtn = Instance.new("TextButton")
-scriptBtn.Size = UDim2.new(1, 0, 0, 55)
+scriptBtn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
 scriptBtn.BackgroundColor3 = palette.card
 scriptBtn.Text = ""
 scriptBtn.BorderSizePixel = 0
@@ -408,7 +520,7 @@ scriptDesc.Parent = scriptBtn
 
 -- Merge Nuke Button
 local mergeNukeBtn = Instance.new("TextButton")
-mergeNukeBtn.Size = UDim2.new(1, 0, 0, 55)
+mergeNukeBtn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
 mergeNukeBtn.BackgroundColor3 = palette.card
 mergeNukeBtn.Text = ""
 mergeNukeBtn.BorderSizePixel = 0
@@ -441,7 +553,7 @@ mergeNukeDesc.Parent = mergeNukeBtn
 
 -- Sell Lemons Button (BARU!)
 local sellLemonsBtn = Instance.new("TextButton")
-sellLemonsBtn.Size = UDim2.new(1, 0, 0, 55)
+sellLemonsBtn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
 sellLemonsBtn.BackgroundColor3 = palette.card
 sellLemonsBtn.Text = ""
 sellLemonsBtn.BorderSizePixel = 0
@@ -474,7 +586,7 @@ sellLemonsDesc.Parent = sellLemonsBtn
 
 -- Coming Soon
 local comingSoon = Instance.new("Frame")
-comingSoon.Size = UDim2.new(1, 0, 0, 55)
+comingSoon.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
 comingSoon.BackgroundColor3 = palette.card
 comingSoon.BackgroundTransparency = 0.6
 comingSoon.BorderSizePixel = 0
@@ -495,7 +607,7 @@ comingTitle.TextXAlignment = Enum.TextXAlignment.Left
 comingTitle.Parent = comingSoon
 
 -- ================================================
--- NAVIGASI & LOGIKA TRANSISI
+-- NAVIGATION & TRANSITION LOGIC
 -- ================================================
 local function showPage(page)
     choosePage.Visible = (page == choosePage)
@@ -503,32 +615,32 @@ local function showPage(page)
     categoryPage.Visible = (page == categoryPage)
 
     if page == choosePage then
-        subTitleText.Text = "Choose Tier to Proceed"
+        subTitleText.Text = "Choose Your Tier"
     elseif page == keyPage then
-        subTitleText.Text = "Verify Premium Credentials"
+        subTitleText.Text = "Verify Premium Key"
     elseif page == categoryPage then
         subTitleText.Text = "Select Script (" .. _tier .. " Mode)"
     end
 end
 
--- Klik Free
+-- Click Free
 freeBtn.MouseButton1Click:Connect(function()
     _tier = "Free"
     getgenv().Tier = "Free"
     showPage(categoryPage)
 end)
 
--- Klik Premium
+-- Click Premium
 premiumBtn.MouseButton1Click:Connect(function()
     showPage(keyPage)
 end)
 
--- Klik Back
+-- Click Back
 keyBack.MouseButton1Click:Connect(function()
     showPage(choosePage)
 end)
 
--- Validasi Key Premium
+-- Validate Premium Key
 keySubmit.MouseButton1Click:Connect(function()
     local text = keyBox.Text
     if text == "" then
@@ -572,7 +684,7 @@ keySubmit.MouseButton1Click:Connect(function()
     end
 end)
 
--- Jalankan TDS Script
+-- Run TDS Script
 scriptBtn.MouseButton1Click:Connect(function()
     notify("Loading TDS module...", palette.green)
     task.wait(1.2)
@@ -580,7 +692,7 @@ scriptBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/TowerDefensiSimulator/Main.lua"))()
 end)
 
--- Jalankan Merge Nuke Script
+-- Run Merge Nuke Script
 mergeNukeBtn.MouseButton1Click:Connect(function()
     notify("Loading Merge Nuke module...", palette.green)
     task.wait(1.2)
@@ -588,13 +700,12 @@ mergeNukeBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/Main.lua"))()
 end)
 
--- Jalankan Sell Lemons Script (BARU!)
+-- Run Sell Lemons Script (NEW!)
 sellLemonsBtn.MouseButton1Click:Connect(function()
     notify("Loading Sell Lemons module...", palette.green)
     task.wait(1.2)
     screenGui:Destroy()
-    -- TODO: Load Sell Lemons script
-    -- loadstring(game:HttpGet("URL_SELL_LEMONS"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/SellLemons/Main.lua"))()
 end)
 
 -- Minimize hover
@@ -610,7 +721,7 @@ end
 bindHover(freeBtn, palette.cardHover, palette.card)
 bindHover(premiumBtn, palette.cardHover, palette.card)
 bindHover(keyBack, palette.cardHover, palette.card)
-bindHover(keySubmit, Color3.fromRGB(200, 150, 0), palette.gold)
+bindHover(keySubmit, Color3.fromRGB(0, 150, 180), palette.gold)
 bindHover(scriptBtn, palette.cardHover, palette.card)
 bindHover(mergeNukeBtn, palette.cardHover, palette.card)
 bindHover(sellLemonsBtn, palette.cardHover, palette.card)

@@ -17,7 +17,7 @@ local _activeLoops = {}
 -- ================================================
 local AutoMerge = {}
 local success, result = pcall(function()
-    return loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/Feature/eauto_merge.lua'))()
+    return loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/Feature/auto_merge.lua'))()
 end)
 
 if success and result then
@@ -35,27 +35,27 @@ else
 end
 
 -- ================================================
--- WARNA & KONFIGURASI - CYBERPUNK NEON THEME
+-- COLORS & CONFIGURATION - OCEAN WAVE THEME
 -- ================================================
 local palette = {
-    bg        = Color3.fromRGB(8, 4, 12),
-    panel     = Color3.fromRGB(15, 8, 22),
-    sidebar   = Color3.fromRGB(12, 6, 18),
-    card      = Color3.fromRGB(20, 10, 30),
-    cardHover = Color3.fromRGB(28, 14, 42),
-    accent    = Color3.fromRGB(255, 0, 128),
-    accent2   = Color3.fromRGB(0, 255, 200),
+    bg        = Color3.fromRGB(11, 19, 43),
+    panel     = Color3.fromRGB(28, 37, 65),
+    sidebar   = Color3.fromRGB(20, 28, 50),
+    card      = Color3.fromRGB(22, 32, 55),
+    cardHover = Color3.fromRGB(35, 50, 75),
+    accent    = Color3.fromRGB(0, 180, 216),
+    accent2   = Color3.fromRGB(144, 224, 239),
     gold      = Color3.fromRGB(255, 200, 0),
-    goldDim   = Color3.fromRGB(180, 140, 0),
-    textMain  = Color3.fromRGB(255, 255, 255),
-    textSub   = Color3.fromRGB(180, 180, 200),
-    textMuted = Color3.fromRGB(120, 100, 140),
-    red       = Color3.fromRGB(255, 50, 80),
-    green     = Color3.fromRGB(0, 255, 150),
-    divider   = Color3.fromRGB(40, 20, 60),
-    execute   = Color3.fromRGB(255, 0, 128),
+    goldDim   = Color3.fromRGB(200, 160, 0),
+    textMain  = Color3.fromRGB(224, 251, 252),
+    textSub   = Color3.fromRGB(170, 215, 225),
+    textMuted = Color3.fromRGB(100, 140, 160),
+    red       = Color3.fromRGB(255, 80, 80),
+    green     = Color3.fromRGB(0, 220, 120),
+    divider   = Color3.fromRGB(30, 45, 65),
+    execute   = Color3.fromRGB(0, 180, 216),
     close     = Color3.fromRGB(60, 30, 90),
-    glow      = Color3.fromRGB(255, 0, 128),
+    glow      = Color3.fromRGB(0, 180, 216),
 }
 
 -- ================================================
@@ -85,7 +85,7 @@ local featureList = {
 }
 
 -- ================================================
--- UTILITAS GUI
+-- GUI UTILITIES
 -- ================================================
 local function mkCorner(p, r) 
     local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, r or 12); c.Parent = p; return c 
@@ -96,9 +96,45 @@ end
 local function mkPadding(p, t, b, l, r) 
     local pd = Instance.new("UIPadding"); pd.PaddingTop = UDim.new(0,t); pd.PaddingBottom = UDim.new(0,b); pd.PaddingLeft = UDim.new(0,l); pd.PaddingRight = UDim.new(0,r); pd.Parent = p; return pd 
 end
+local function mkGradient(p, c1, c2, rot)
+    local g = Instance.new("UIGradient")
+    g.Color = ColorSequence.new(c1, c2)
+    g.Rotation = rot or 90
+    g.Parent = p
+    return g
+end
+local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
+    local g1 = Instance.new("ImageLabel")
+    g1.Name = name .. "_1"
+    g1.Size = UDim2.new(0, 100, 0, 100)
+    g1.Position = UDim2.new(xScale, xOff, yScale, yOff)
+    g1.AnchorPoint = Vector2.new(0.5, 0.5)
+    g1.BackgroundTransparency = 1
+    g1.Image = "rbxassetid://5028857084"
+    g1.ImageColor3 = color1
+    g1.ImageTransparency = 0.25
+    g1.ZIndex = -1
+    g1.Parent = mainFrame
+    _ts:Create(g1, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
+    _ts:Create(g1, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.5}):Play()
+
+    local g2 = Instance.new("ImageLabel")
+    g2.Name = name .. "_2"
+    g2.Size = UDim2.new(0, 60, 0, 60)
+    g2.Position = UDim2.new(xScale, xOff, yScale, yOff)
+    g2.AnchorPoint = Vector2.new(0.5, 0.5)
+    g2.BackgroundTransparency = 1
+    g2.Image = "rbxassetid://5028857084"
+    g2.ImageColor3 = color2
+    g2.ImageTransparency = 0.35
+    g2.ZIndex = -1
+    g2.Parent = mainFrame
+    _ts:Create(g2, TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = -360}):Play()
+    _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
+end
 
 -- ================================================
--- HAPUS GUI LAMA
+-- Remove old GUI
 -- ================================================
 local _core = game:GetService("CoreGui")
 if _core:FindFirstChild("BorcaHubMergeNuke") then
@@ -106,7 +142,7 @@ if _core:FindFirstChild("BorcaHubMergeNuke") then
 end
 
 -- ================================================
--- STRUKTUR GUI UTAMA - CYBERPUNK DESIGN
+-- MAIN GUI STRUCTURE - OCEAN WAVE DESIGN
 -- ================================================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BorcaHubMergeNuke"
@@ -132,7 +168,12 @@ mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 mkCorner(mainFrame, 24)
 
--- Animated gradient background
+createCornerGlow("TL", 0, -22, 0, -22, palette.accent, palette.accent2)
+createCornerGlow("TR", 1, 22, 0, -22, palette.accent2, palette.accent)
+createCornerGlow("BL", 0, -22, 1, 22, palette.accent2, palette.accent)
+createCornerGlow("BR", 1, 22, 1, 22, palette.accent, palette.accent2)
+
+-- Animated ocean gradient background
 local bgGradient = Instance.new("UIGradient")
 bgGradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(8, 4, 12)),
@@ -142,7 +183,7 @@ bgGradient.Color = ColorSequence.new({
 bgGradient.Rotation = 45
 bgGradient.Parent = mainFrame
 
--- Neon border with animated glow
+-- Ocean neon border with animated glow
 local borderFrame = Instance.new("Frame")
 borderFrame.Name = "NeonBorder"
 borderFrame.Size = UDim2.new(1, 4, 1, 4)
@@ -165,7 +206,7 @@ borderGlow.Thickness = 6
 borderGlow.Transparency = 0.7
 borderGlow.Parent = borderFrame
 
--- Animated scanline effect
+-- Animated wave scanline effect
 local scanline = Instance.new("Frame")
 scanline.Name = "Scanline"
 scanline.Size = UDim2.new(1, 0, 0, 2)
@@ -190,7 +231,7 @@ _ts:Create(mainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDi
 }):Play()
 
 -- ================================================
--- TITLE BAR - CYBERPUNK STYLE
+-- TITLE BAR - OCEAN WAVE STYLE
 -- ================================================
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
@@ -277,7 +318,7 @@ tagStroke.Color = (_tier == "Premium") and palette.gold or palette.accent
 tagStroke.Thickness = 2
 tagStroke.Parent = tagLabel
 
--- Version with cyber style
+-- Version with ocean style
 local versionLabel = Instance.new("TextLabel")
 versionLabel.Name = "Ver"
 versionLabel.Size = UDim2.new(0, 80, 0, 24)
@@ -292,7 +333,7 @@ versionLabel.BorderSizePixel = 0
 versionLabel.Parent = titleBg
 mkCorner(versionLabel, 4)
 
--- Close button with cyber design
+-- Close button with ocean design
 local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
 closeBtn.Size = UDim2.new(0, 36, 0, 36)
@@ -344,7 +385,7 @@ bodyFrame.BorderSizePixel = 0
 bodyFrame.Parent = mainFrame
 
 -- ================================================
--- PANEL KIRI - CYBERPUNK LIST DESIGN
+-- LEFT PANEL - OCEAN WAVE LIST DESIGN
 -- ================================================
 local leftPanel = Instance.new("Frame")
 leftPanel.Name = "LeftPanel"
@@ -416,7 +457,7 @@ listLayout.Padding = UDim.new(0, 10)
 listLayout.Parent = scrollFrame
 
 -- ================================================
--- PANEL KANAN - CYBERPUNK INFO PANEL
+-- RIGHT PANEL - OCEAN WAVE INFO PANEL
 -- ================================================
 local rightPanel = Instance.new("Frame")
 rightPanel.Name = "RightPanel"
@@ -486,7 +527,7 @@ infoContent.RichText = true
 infoContent.Parent = rightPanel
 
 -- ================================================
--- BOTTOM BUTTONS - CYBERPUNK STYLE
+-- BOTTOM BUTTONS - OCEAN WAVE STYLE
 -- ================================================
 local btnRow = Instance.new("Frame")
 btnRow.Name = "Buttons"
@@ -537,7 +578,7 @@ execGlow.Parent = executeBtn
 mkCorner(execGlow, 16)
 
 -- ================================================
--- LOGIKA SELEKSI FITUR
+-- FEATURE SELECTION LOGIC
 -- ================================================
 local selectedFeature = nil
 local cardRefs = {}
@@ -574,26 +615,17 @@ local function selectFeature(feat)
 end
 
 -- ================================================
--- POPUP NOTIFIKASI - CYBERPUNK STYLE
+-- OCEAN WAVE NOTIFICATIONS
 -- ================================================
 local function showAccessDenied()
     local popup = Instance.new("Frame")
     popup.Size = UDim2.new(0, 480, 0, 180)
     popup.Position = UDim2.new(0.5, -240, 0.5, -90)
     popup.BackgroundColor3 = palette.bg
-    popup.BackgroundTransparency = 0.95
     popup.BorderSizePixel = 0
     popup.ZIndex = 500
     popup.Parent = mainFrame
     mkCorner(popup, 20)
-    
-    local popupGradient = Instance.new("UIGradient")
-    popupGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, palette.bg),
-        ColorSequenceKeypoint.new(1, palette.panel)
-    })
-    popupGradient.Rotation = 45
-    popupGradient.Parent = popup
     
     local popupStroke = Instance.new("UIStroke")
     popupStroke.Color = palette.red
@@ -610,11 +642,6 @@ local function showAccessDenied()
     title.ZIndex = 501
     title.Parent = popup
     
-    local titleStroke = Instance.new("TextStroke")
-    titleStroke.Color = palette.red
-    titleStroke.Thickness = 2
-    title.TextStroke = titleStroke
-
     local msg = Instance.new("TextLabel")
     msg.Size = UDim2.new(1, -50, 0, 70)
     msg.Position = UDim2.new(0, 25, 0, 65)
@@ -632,7 +659,7 @@ local function showAccessDenied()
     okBtn.Position = UDim2.new(0.5, -70, 0, 125)
     okBtn.BackgroundColor3 = palette.red
     okBtn.BackgroundTransparency = 0.3
-    okBtn.Text = "UNDERSTOOD"
+    okBtn.Text = "OK"
     okBtn.TextColor3 = palette.textMain
     okBtn.TextSize = 16
     okBtn.Font = Enum.Font.GothamBold
@@ -656,7 +683,7 @@ local function showAccessDenied()
 end
 
 -- ================================================
--- RENDER DAFTAR FITUR - CYBERPUNK CARDS
+-- RENDER FEATURE LIST - OCEAN WAVE CARDS
 -- ================================================
 for i, feat in ipairs(featureList) do
     local tierColor = (feat.tier == "premium") and palette.gold or palette.accent
@@ -737,7 +764,7 @@ for i, feat in ipairs(featureList) do
         nameLabel.TextStroke = nameStroke
     end
     
-    -- Description with cyber style
+    -- Description with ocean style
     local descLabel = Instance.new("TextLabel")
     descLabel.Size = UDim2.new(1, -65, 0, 24)
     descLabel.Position = UDim2.new(0, 45, 0, 45)
@@ -794,7 +821,7 @@ for i, feat in ipairs(featureList) do
 end
 
 -- ================================================
--- PROSES EKSEKUSI - CYBERPUNK NOTIFICATIONS
+-- EXECUTION & NOTIFICATION - OCEAN WAVE STYLE
 -- ================================================
 local function notifyPopup(msg, col)
     local nf = Instance.new("Frame")
