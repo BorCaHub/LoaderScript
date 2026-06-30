@@ -326,10 +326,43 @@ scriptDesc.Font = Enum.Font.Gotham
 scriptDesc.TextXAlignment = Enum.TextXAlignment.Left
 scriptDesc.Parent = scriptBtn
 
+-- Merge Nuke Button
+local mergeNukeBtn = Instance.new("TextButton")
+mergeNukeBtn.Size = UDim2.new(1, 0, 0, 60)
+mergeNukeBtn.Position = UDim2.new(0, 0, 0.28, 0)
+mergeNukeBtn.BackgroundColor3 = palette.card
+mergeNukeBtn.Text = ""
+mergeNukeBtn.BorderSizePixel = 0
+mergeNukeBtn.Parent = categoryPage
+mkCorner(mergeNukeBtn, 8)
+mkStroke(mergeNukeBtn, palette.divider, 1)
+
+local mergeNukeTitle = Instance.new("TextLabel")
+mergeNukeTitle.Size = UDim2.new(1, -20, 0, 30)
+mergeNukeTitle.Position = UDim2.new(0, 15, 0, 6)
+mergeNukeTitle.BackgroundTransparency = 1
+mergeNukeTitle.Text = "Merge Nuke"
+mergeNukeTitle.TextColor3 = palette.textMain
+mergeNukeTitle.TextSize = 17 -- Diperbesar dari 16
+mergeNukeTitle.Font = Enum.Font.GothamBold
+mergeNukeTitle.TextXAlignment = Enum.TextXAlignment.Left
+mergeNukeTitle.Parent = mergeNukeBtn
+
+local mergeNukeDesc = Instance.new("TextLabel")
+mergeNukeDesc.Size = UDim2.new(1, -20, 0, 20)
+mergeNukeDesc.Position = UDim2.new(0, 15, 0, 32)
+mergeNukeDesc.BackgroundTransparency = 1
+mergeNukeDesc.Text = "Click to run Merge Nuke modules (Auto Merge, etc.)"
+mergeNukeDesc.TextColor3 = palette.textMuted
+mergeNukeDesc.TextSize = 12 -- Diperbesar dari 11
+mergeNukeDesc.Font = Enum.Font.Gotham
+mergeNukeDesc.TextXAlignment = Enum.TextXAlignment.Left
+mergeNukeDesc.Parent = mergeNukeBtn
+
 -- Script placeholder non-aktif
 local comingSoon = Instance.new("Frame")
 comingSoon.Size = UDim2.new(1, 0, 0, 60)
-comingSoon.Position = UDim2.new(0, 0, 0.45, 0)
+comingSoon.Position = UDim2.new(0, 0, 0.62, 0)
 comingSoon.BackgroundColor3 = palette.card
 comingSoon.BackgroundTransparency = 0.6
 comingSoon.BorderSizePixel = 0
@@ -436,6 +469,16 @@ scriptBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/TowerDefensiSimulator/Main.lua"))()
 end)
 
+-- Jalankan Merge Nuke Script
+mergeNukeBtn.MouseButton1Click:Connect(function()
+    notify("Loading Merge Nuke module...", palette.green)
+    task.wait(1.2)
+    screenGui:Destroy()
+    
+    -- Load Merge Nuke script utama dari repo BorCaHub
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/Main.lua"))()
+end)
+
 -- Hover effect umum
 local function bindHover(btn, hoverColor, defaultColor)
     btn.MouseEnter:Connect(function()
@@ -450,3 +493,4 @@ bindHover(freeBtn, palette.cardHover, palette.card)
 bindHover(premiumBtn, palette.cardHover, palette.card)
 bindHover(keyBack, palette.cardHover, palette.card)
 bindHover(scriptBtn, palette.cardHover, palette.card)
+bindHover(mergeNukeBtn, palette.cardHover, palette.card)
