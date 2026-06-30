@@ -129,8 +129,7 @@ mainFrame.Parent = screenGui
 mkCorner(mainFrame, 16)
 
 -- NEON GLOW BORDER EFFECT
-local borderGlow = mkStroke(mainFrame, Color3.fromRGB(255, 255, 255), 3)
-mkGradient(borderGlow, palette.accent, palette.gold, 45)
+local borderGlow = mkStroke(mainFrame, palette.accent, 2)
 
 -- CAHAYA CORNER GLOW DI 4 SUDUT (masing-masing 2 layer: Biru + Kuning, menjorok keluar)
 local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
@@ -175,7 +174,7 @@ createCornerGlow("BR", 1, 25, 1, 25, palette.accent, palette.gold)
 mainFrame.Size = UDim2.new(0, 0, 0, 0)
 mainFrame.BackgroundTransparency = 1
 _ts:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-    Size = UDim2.new(0, 850, 0, 550),
+    Size = UDim2.new(0, 460, 0, 340),
     BackgroundTransparency = 0
 }):Play()
 

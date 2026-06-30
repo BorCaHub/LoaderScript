@@ -234,8 +234,8 @@ choosePage.Size = UDim2.new(1, 0, 1, 0)
 choosePage.BackgroundTransparency = 1
 choosePage.Parent = pages
 
--- Helper function untuk button tier dengan glow
-local function createTierBtn(pos, title, desc, color, glowCol)
+-- Helper function untuk button tier
+local function createTierBtn(pos, title, desc, color)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0.46, 0, 0.65, 0)
     btn.Position = pos
@@ -245,35 +245,6 @@ local function createTierBtn(pos, title, desc, color, glowCol)
     btn.Parent = choosePage
     mkCorner(btn, 10)
     mkStroke(btn, palette.divider, 1)
-    
-    -- Glow di 2 sudut
-    local g1 = Instance.new("ImageLabel")
-    g1.Size = UDim2.new(0, 70, 0, 70)
-    g1.Position = UDim2.new(0, -18, 0, -18)
-    g1.AnchorPoint = Vector2.new(0.5, 0.5)
-    g1.BackgroundTransparency = 1
-    g1.Image = "rbxassetid://5028857084"
-    g1.ImageColor3 = glowCol
-    g1.ImageTransparency = 0.2
-    g1.ZIndex = -1
-    g1.Parent = btn
-    _ts:Create(g1, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
-    _ts:Create(g1, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.5}):Play()
-    
-    local g2 = Instance.new("ImageLabel")
-    g2.Size = UDim2.new(0, 45, 0, 45)
-    g2.Position = UDim2.new(1, 15, 1, 15)
-    g2.AnchorPoint = Vector2.new(0.5, 0.5)
-    g2.BackgroundTransparency = 1
-    g2.Image = "rbxassetid://5028857084"
-    g2.ImageColor3 = palette.accent
-    g2.ImageTransparency = 0.3
-    g2.ZIndex = -1
-    g2.Parent = btn
-    _ts:Create(g2, TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = -360}):Play()
-    _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
-    
-    -- Title
     local t = Instance.new("TextLabel")
     t.Size = UDim2.new(1, 0, 0, 30)
     t.Position = UDim2.new(0, 0, 0.2, 0)
@@ -310,7 +281,6 @@ local freeBtn = createTierBtn(
     UDim2.new(0, 0, 0.18, 0),
     "FREE",
     "Directly choose script with normal features",
-    palette.accent,
     palette.accent
 )
 
@@ -318,7 +288,6 @@ local premiumBtn = createTierBtn(
     UDim2.new(0.54, 0, 0.18, 0),
     "PREMIUM",
     "Requires premium key to unlock advanced features",
-    palette.gold,
     palette.gold
 )
 
