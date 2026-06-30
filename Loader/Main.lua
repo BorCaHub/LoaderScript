@@ -327,20 +327,22 @@ scrollFrame.Size = UDim2.new(1, 0, 1, 0)
 scrollFrame.Position = UDim2.new(0, 0, 0, 0)
 scrollFrame.BackgroundTransparency = 1
 scrollFrame.BorderSizePixel = 0
-scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarThickness = 6
 scrollFrame.ScrollBarImageColor3 = palette.accent
-scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 400) -- Manual canvas size for scrolling
 scrollFrame.Parent = categoryPage
 
 local listLayout = Instance.new("UIListLayout")
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-listLayout.Padding = UDim.new(0, 8)
+listLayout.Padding = UDim.new(0, 12) -- Increased padding
 listLayout.Parent = scrollFrame
 
 local listPadding = Instance.new("UIPadding")
-listPadding.PaddingTop = UDim.new(0, 0)
-listPadding.PaddingBottom = UDim.new(0, 0)
+listPadding.PaddingTop = UDim.new(0, 10)
+listPadding.PaddingLeft = UDim.new(0, 0)
+listPadding.PaddingRight = UDim.new(0, 0)
+listPadding.PaddingBottom = UDim.new(0, 10)
 listPadding.Parent = scrollFrame
 
 -- TDS Button
