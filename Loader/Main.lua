@@ -68,10 +68,37 @@ mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 mainFrame.Size = UDim2.new(0, 480, 0, 320)
 mainFrame.BackgroundColor3 = palette.bg
 mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = true
+mainFrame.ClipsDescendants = false -- Allow corner lights to be visible
 mainFrame.Parent = screenGui
 mkCorner(mainFrame, 12)
 mkStroke(mainFrame, palette.divider, 1)
+
+-- Rotating corner lights
+local function createCornerLight(position, anchor, color)
+    local light = Instance.new("ImageLabel")
+    light.Size = UDim2.new(0, 80, 0, 80)
+    light.Position = position
+    light.AnchorPoint = anchor
+    light.BackgroundTransparency = 1
+    light.Image = "rbxassetid://5028857084" -- Radial blur glow
+    light.ImageColor3 = color
+    light.ImageTransparency = 0.5
+    light.ZIndex = -1
+    light.Parent = mainFrame
+    
+    -- Rotate animation
+    local rotationTween = _ts:Create(light, TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {
+        Rotation = 360
+    })
+    rotationTween:Play()
+    
+    return light
+end
+
+createCornerLight(UDim2.new(0, 0, 0, 0), Vector2.new(0, 0), palette.accent)
+createCornerLight(UDim2.new(1, 0, 0, 0), Vector2.new(1, 0), palette.gold)
+createCornerLight(UDim2.new(0, 0, 1, 0), Vector2.new(0, 1), palette.gold)
+createCornerLight(UDim2.new(1, 0, 1, 0), Vector2.new(1, 1), palette.accent)
 
 -- Top Accent Line
 local topAccent = Instance.new("Frame")
@@ -286,7 +313,7 @@ mkCorner(keyBack, 8)
 mkStroke(keyBack, palette.divider, 1)
 
 -- ================================================
--- HALAMAN 3: SCRIPT CATEGORY
+-- HALAMAN 3: SCRIPT CATEGORY (SCROLLABLE)
 -- ================================================
 local categoryPage = Instance.new("Frame")
 categoryPage.Size = UDim2.new(1, 0, 1, 0)
@@ -294,13 +321,36 @@ categoryPage.BackgroundTransparency = 1
 categoryPage.Visible = false
 categoryPage.Parent = pages
 
+-- Scrolling Frame for game list
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, 0, 1, 0)
+scrollFrame.Position = UDim2.new(0, 0, 0, 0)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.BorderSizePixel = 0
+scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarImageColor3 = palette.accent
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollFrame.Parent = categoryPage
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 8)
+listLayout.Parent = scrollFrame
+
+local listPadding = Instance.new("UIPadding")
+listPadding.PaddingTop = UDim.new(0, 0)
+listPadding.PaddingBottom = UDim.new(0, 0)
+listPadding.Parent = scrollFrame
+
+-- TDS Button
 local scriptBtn = Instance.new("TextButton")
 scriptBtn.Size = UDim2.new(1, 0, 0, 60)
-scriptBtn.Position = UDim2.new(0, 0, 0.1, 0)
 scriptBtn.BackgroundColor3 = palette.card
 scriptBtn.Text = ""
 scriptBtn.BorderSizePixel = 0
-scriptBtn.Parent = categoryPage
+scriptBtn.LayoutOrder = 1
+scriptBtn.Parent = scrollFrame
 mkCorner(scriptBtn, 8)
 mkStroke(scriptBtn, palette.divider, 1)
 
@@ -310,7 +360,7 @@ scriptTitle.Position = UDim2.new(0, 15, 0, 6)
 scriptTitle.BackgroundTransparency = 1
 scriptTitle.Text = "Tower Defense Simulator"
 scriptTitle.TextColor3 = palette.textMain
-scriptTitle.TextSize = 17 -- Diperbesar dari 16
+scriptTitle.TextSize = 17
 scriptTitle.Font = Enum.Font.GothamBold
 scriptTitle.TextXAlignment = Enum.TextXAlignment.Left
 scriptTitle.Parent = scriptBtn
@@ -321,7 +371,7 @@ scriptDesc.Position = UDim2.new(0, 15, 0, 32)
 scriptDesc.BackgroundTransparency = 1
 scriptDesc.Text = "Click to run TDS modules (Auto Farm, Macros, etc.)"
 scriptDesc.TextColor3 = palette.textMuted
-scriptDesc.TextSize = 12 -- Diperbesar dari 11
+scriptDesc.TextSize = 12
 scriptDesc.Font = Enum.Font.Gotham
 scriptDesc.TextXAlignment = Enum.TextXAlignment.Left
 scriptDesc.Parent = scriptBtn
@@ -329,11 +379,11 @@ scriptDesc.Parent = scriptBtn
 -- Merge Nuke Button
 local mergeNukeBtn = Instance.new("TextButton")
 mergeNukeBtn.Size = UDim2.new(1, 0, 0, 60)
-mergeNukeBtn.Position = UDim2.new(0, 0, 0.28, 0)
 mergeNukeBtn.BackgroundColor3 = palette.card
 mergeNukeBtn.Text = ""
 mergeNukeBtn.BorderSizePixel = 0
-mergeNukeBtn.Parent = categoryPage
+mergeNukeBtn.LayoutOrder = 2
+mergeNukeBtn.Parent = scrollFrame
 mkCorner(mergeNukeBtn, 8)
 mkStroke(mergeNukeBtn, palette.divider, 1)
 
@@ -343,7 +393,7 @@ mergeNukeTitle.Position = UDim2.new(0, 15, 0, 6)
 mergeNukeTitle.BackgroundTransparency = 1
 mergeNukeTitle.Text = "Merge Nuke"
 mergeNukeTitle.TextColor3 = palette.textMain
-mergeNukeTitle.TextSize = 17 -- Diperbesar dari 16
+mergeNukeTitle.TextSize = 17
 mergeNukeTitle.Font = Enum.Font.GothamBold
 mergeNukeTitle.TextXAlignment = Enum.TextXAlignment.Left
 mergeNukeTitle.Parent = mergeNukeBtn
@@ -354,19 +404,19 @@ mergeNukeDesc.Position = UDim2.new(0, 15, 0, 32)
 mergeNukeDesc.BackgroundTransparency = 1
 mergeNukeDesc.Text = "Click to run Merge Nuke modules (Auto Merge, etc.)"
 mergeNukeDesc.TextColor3 = palette.textMuted
-mergeNukeDesc.TextSize = 12 -- Diperbesar dari 11
+mergeNukeDesc.TextSize = 12
 mergeNukeDesc.Font = Enum.Font.Gotham
 mergeNukeDesc.TextXAlignment = Enum.TextXAlignment.Left
 mergeNukeDesc.Parent = mergeNukeBtn
 
--- Script placeholder non-aktif
+-- Coming Soon placeholder
 local comingSoon = Instance.new("Frame")
 comingSoon.Size = UDim2.new(1, 0, 0, 60)
-comingSoon.Position = UDim2.new(0, 0, 0.62, 0)
 comingSoon.BackgroundColor3 = palette.card
 comingSoon.BackgroundTransparency = 0.6
 comingSoon.BorderSizePixel = 0
-comingSoon.Parent = categoryPage
+comingSoon.LayoutOrder = 3
+comingSoon.Parent = scrollFrame
 mkCorner(comingSoon, 8)
 mkStroke(comingSoon, palette.divider, 1)
 
@@ -376,7 +426,7 @@ comingTitle.Position = UDim2.new(0, 15, 0, 0)
 comingTitle.BackgroundTransparency = 1
 comingTitle.Text = "Other Games Coming Soon..."
 comingTitle.TextColor3 = palette.textMuted
-comingTitle.TextSize = 15 -- Diperbesar dari 14
+comingTitle.TextSize = 15
 comingTitle.Font = Enum.Font.GothamBold
 comingTitle.TextXAlignment = Enum.TextXAlignment.Left
 comingTitle.Parent = comingSoon
