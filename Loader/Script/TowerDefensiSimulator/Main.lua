@@ -13,6 +13,11 @@ local _http = game:GetService("HttpService")
 local _activeLoops = {}
 
 -- ================================================
+-- LOAD MACRO MODULE
+-- ================================================
+local Macro = loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/TowerDefensiSimulator/Macro/v1%20-%20Timed/recorder%20v1.lua'))()
+
+-- ================================================
 -- WARNA & KONFIGURASI
 -- ================================================
 local palette = {
@@ -38,6 +43,16 @@ local palette = {
 -- DAFTAR FITUR (SIMPLIFIED & CLEAN EXAMPLE)
 -- ================================================
 local featureList = {
+    {
+        id = "macro_v1_recorder",
+        name = "Macro v1 - Time Based Recorder",
+        desc = "Record and playback tower placements with precise timing. Record your strategy and replay it automatically.",
+        tier = "free",
+        reqLevel = "Level 0+",
+        towers = "Any Tower",
+        map = "Any Map",
+        running = false,
+    },
     {
         id = "example_free",
         name = "Exemple Free Strat",
@@ -594,10 +609,53 @@ executeBtn.MouseButton1Click:Connect(function()
         }):Play()
     end
     
-    if feat.running then
-        notifyPopup("▶ " .. feat.name .. " activated", palette.execute)
+    -- Execute macro logic
+    if feat.id == "macro_v1_recorder" then
+        if feat.running then
+            -- Start recording
+            if Macro.StartRecording then
+                local success = Macro.StartRecording()
+                if success then
+                    notifyPopup("🔴 Recording started!", palette.execute)
+                    
+                    -- Auto-stop recording after 5 minutes or add manual stop
+                    task.spawn(function()
+                        while feat.running do
+                            task.wait(0.1)
+                            -- Check if user wants to stop (could add keybind)
+                        end
+                        if Macro.StopRecording then
+                            Macro.StopRecording()
+                        end
+                    end)
+                else
+                    notifyPopup("Failed to start recording", palette.red)
+                    feat.running = false
+                    if card and card:FindFirstChild("RunDot") then
+                        _ts:Create(card.RunDot, TweenInfo.new(0.2), {
+                            BackgroundTransparency = 1
+                        }):Play()
+                    end
+                end
+            else
+                notifyPopup("Macro module not loaded", palette.red)
+                feat.running = false
+            end
+        else
+            -- Stop recording and show info
+            if Macro.StopRecording then
+                Macro.StopRecording()
+                local info = Macro.GetMacroInfo and Macro.GetMacroInfo() or {}
+                notifyPopup("⏹ Recording stopped! Actions: " .. (info.ActionCount or 0), palette.close)
+            end
+        end
     else
-        notifyPopup("⏹ " .. feat.name .. " stopped", palette.close)
+        -- Other features
+        if feat.running then
+            notifyPopup("▶ " .. feat.name .. " activated", palette.execute)
+        else
+            notifyPopup("⏹ " .. feat.name .. " stopped", palette.close)
+        end
     end
 end)
 
