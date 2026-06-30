@@ -15,7 +15,25 @@ local _activeLoops = {}
 -- ================================================
 -- LOAD MACRO MODULE
 -- ================================================
-local Macro = loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/TowerDefensiSimulator/Macro/v1%20-%20Timed/recorder%20v1.lua'))()
+local Macro = {}
+local success, result = pcall(function()
+    return loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/TowerDefensiSimulator/Macro/v1%20-%20Timed/recorder%20v1.lua'))()
+end)
+
+if success and result then
+    Macro = result
+    warn("[BorcaHub] Macro module loaded successfully!")
+else
+    warn("[BorcaHub] Failed to load macro module: " .. tostring(result))
+    -- Create stub functions
+    Macro = {
+        StartRecording = function() warn("Macro not loaded") return false end,
+        StopRecording = function() warn("Macro not loaded") return false end,
+        StartPlayback = function() warn("Macro not loaded") return false end,
+        StopPlayback = function() warn("Macro not loaded") return false end,
+        GetMacroInfo = function() return {ActionCount = 0} end,
+    }
+end
 
 -- ================================================
 -- WARNA & KONFIGURASI
@@ -47,7 +65,7 @@ local featureList = {
         id = "macro_v1_recorder",
         name = "Macro v1 - Time Based Recorder",
         desc = "Record and playback tower placements with precise timing. Record your strategy and replay it automatically.",
-        tier = "free",
+        tier = "premium",
         reqLevel = "Level 0+",
         towers = "Any Tower",
         map = "Any Map",
