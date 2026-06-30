@@ -76,18 +76,18 @@ mkStroke(mainFrame, palette.divider, 1)
 -- Rotating corner lights
 local function createCornerLight(position, anchor, color)
     local light = Instance.new("ImageLabel")
-    light.Size = UDim2.new(0, 80, 0, 80)
+    light.Size = UDim2.new(0, 100, 0, 100)
     light.Position = position
     light.AnchorPoint = anchor
     light.BackgroundTransparency = 1
     light.Image = "rbxassetid://5028857084" -- Radial blur glow
     light.ImageColor3 = color
-    light.ImageTransparency = 0.5
-    light.ZIndex = -1
+    light.ImageTransparency = 0.3
+    light.ZIndex = 10 -- Higher ZIndex to be visible
     light.Parent = mainFrame
     
     -- Rotate animation
-    local rotationTween = _ts:Create(light, TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {
+    local rotationTween = _ts:Create(light, TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {
         Rotation = 360
     })
     rotationTween:Play()
@@ -95,10 +95,11 @@ local function createCornerLight(position, anchor, color)
     return light
 end
 
-createCornerLight(UDim2.new(0, 0, 0, 0), Vector2.new(0, 0), palette.accent)
-createCornerLight(UDim2.new(1, 0, 0, 0), Vector2.new(1, 0), palette.gold)
-createCornerLight(UDim2.new(0, 0, 1, 0), Vector2.new(0, 1), palette.gold)
-createCornerLight(UDim2.new(1, 0, 1, 0), Vector2.new(1, 1), palette.accent)
+-- Create lights at all 4 corners with offset to be visible outside frame
+createCornerLight(UDim2.new(0, -20, 0, -20), Vector2.new(0, 0), palette.accent)
+createCornerLight(UDim2.new(1, 20, 0, -20), Vector2.new(1, 0), palette.gold)
+createCornerLight(UDim2.new(0, -20, 1, 20), Vector2.new(0, 1), palette.gold)
+createCornerLight(UDim2.new(1, 20, 1, 20), Vector2.new(1, 1), palette.accent)
 
 -- Top Accent Line
 local topAccent = Instance.new("Frame")
@@ -131,22 +132,22 @@ end)
 
 -- Title
 local titleText = Instance.new("TextLabel")
-titleText.Size = UDim2.new(1, 0, 0, 50)
+titleText.Size = UDim2.new(1, 0, 0, 60)
 titleText.Position = UDim2.new(0, 0, 0, 2)
 titleText.BackgroundTransparency = 1
 titleText.Text = "BORCA HUB"
 titleText.TextColor3 = palette.textMain
-titleText.TextSize = 22
+titleText.TextSize = 33 -- 1.5x from 22
 titleText.Font = Enum.Font.GothamBold
 titleText.Parent = mainFrame
 
 local subTitleText = Instance.new("TextLabel")
-subTitleText.Size = UDim2.new(1, 0, 0, 20)
-subTitleText.Position = UDim2.new(0, 0, 0, 42)
+subTitleText.Size = UDim2.new(1, 0, 0, 25)
+subTitleText.Position = UDim2.new(0, 0, 0, 52)
 subTitleText.BackgroundTransparency = 1
 subTitleText.Text = "Choose Tier to Proceed"
 subTitleText.TextColor3 = palette.textSub
-subTitleText.TextSize = 12
+subTitleText.TextSize = 18 -- 1.5x from 12
 subTitleText.Font = Enum.Font.GothamMedium
 subTitleText.Parent = mainFrame
 
@@ -212,22 +213,22 @@ mkCorner(freeBtn, 10)
 mkStroke(freeBtn, palette.divider, 1)
 
 local freeTitle = Instance.new("TextLabel")
-freeTitle.Size = UDim2.new(1, 0, 0, 30)
+freeTitle.Size = UDim2.new(1, 0, 0, 35)
 freeTitle.Position = UDim2.new(0, 0, 0.25, 0)
 freeTitle.BackgroundTransparency = 1
 freeTitle.Text = "FREE"
 freeTitle.TextColor3 = palette.accent
-freeTitle.TextSize = 20
+freeTitle.TextSize = 30 -- 1.5x from 20
 freeTitle.Font = Enum.Font.GothamBold
 freeTitle.Parent = freeBtn
 
 local freeDesc = Instance.new("TextLabel")
-freeDesc.Size = UDim2.new(1, 0, 0, 45)
+freeDesc.Size = UDim2.new(1, 0, 0, 50)
 freeDesc.Position = UDim2.new(0, 0, 0.48, 0)
 freeDesc.BackgroundTransparency = 1
 freeDesc.Text = "Directly choose script\nwith normal features"
 freeDesc.TextColor3 = palette.textMuted
-freeDesc.TextSize = 13 -- Diperbesar dari 11
+freeDesc.TextSize = 20 -- 1.5x from 13
 freeDesc.Font = Enum.Font.Gotham
 freeDesc.Parent = freeBtn
 
@@ -243,22 +244,22 @@ mkCorner(premiumBtn, 10)
 mkStroke(premiumBtn, palette.divider, 1)
 
 local premiumTitle = Instance.new("TextLabel")
-premiumTitle.Size = UDim2.new(1, 0, 0, 30)
+premiumTitle.Size = UDim2.new(1, 0, 0, 35)
 premiumTitle.Position = UDim2.new(0, 0, 0.25, 0)
 premiumTitle.BackgroundTransparency = 1
 premiumTitle.Text = "PREMIUM"
 premiumTitle.TextColor3 = palette.gold
-premiumTitle.TextSize = 20
+premiumTitle.TextSize = 30 -- 1.5x from 20
 premiumTitle.Font = Enum.Font.GothamBold
 premiumTitle.Parent = premiumBtn
 
 local premiumDesc = Instance.new("TextLabel")
-premiumDesc.Size = UDim2.new(1, 0, 0, 45)
+premiumDesc.Size = UDim2.new(1, 0, 0, 50)
 premiumDesc.Position = UDim2.new(0, 0, 0.48, 0)
 premiumDesc.BackgroundTransparency = 1
 premiumDesc.Text = "Requires premium key\nto unlock advanced features"
 premiumDesc.TextColor3 = palette.textMuted
-premiumDesc.TextSize = 13 -- Diperbesar dari 11
+premiumDesc.TextSize = 20 -- 1.5x from 13
 premiumDesc.Font = Enum.Font.Gotham
 premiumDesc.Parent = premiumBtn
 
@@ -272,14 +273,14 @@ keyPage.Visible = false
 keyPage.Parent = pages
 
 local keyBox = Instance.new("TextBox")
-keyBox.Size = UDim2.new(1, 0, 0, 44)
+keyBox.Size = UDim2.new(1, 0, 0, 50)
 keyBox.Position = UDim2.new(0, 0, 0.2, 0)
 keyBox.BackgroundColor3 = palette.card
 keyBox.Text = ""
 keyBox.PlaceholderText = "Enter your Premium Key..."
 keyBox.PlaceholderColor3 = palette.textMuted
 keyBox.TextColor3 = palette.textMain
-keyBox.TextSize = 15 -- Diperbesar dari 14
+keyBox.TextSize = 23 -- 1.5x from 15
 keyBox.Font = Enum.Font.GothamBold
 keyBox.BorderSizePixel = 0
 keyBox.ClearTextOnFocus = false
@@ -288,24 +289,24 @@ mkCorner(keyBox, 8)
 mkStroke(keyBox, palette.divider, 1)
 
 local keySubmit = Instance.new("TextButton")
-keySubmit.Size = UDim2.new(0.48, 0, 0, 40)
+keySubmit.Size = UDim2.new(0.48, 0, 0, 45)
 keySubmit.Position = UDim2.new(0.52, 0, 0.55, 0)
 keySubmit.BackgroundColor3 = palette.gold
 keySubmit.Text = "Validate Key"
 keySubmit.TextColor3 = palette.bg
-keySubmit.TextSize = 14 -- Diperbesar dari 13
+keySubmit.TextSize = 21 -- 1.5x from 14
 keySubmit.Font = Enum.Font.GothamBold
 keySubmit.BorderSizePixel = 0
 keySubmit.Parent = keyPage
 mkCorner(keySubmit, 8)
 
 local keyBack = Instance.new("TextButton")
-keyBack.Size = UDim2.new(0.48, 0, 0, 40)
+keyBack.Size = UDim2.new(0.48, 0, 0, 45)
 keyBack.Position = UDim2.new(0, 0, 0.55, 0)
 keyBack.BackgroundColor3 = palette.card
 keyBack.Text = "Back"
 keyBack.TextColor3 = palette.textSub
-keyBack.TextSize = 14 -- Diperbesar dari 13
+keyBack.TextSize = 21 -- 1.5x from 14
 keyBack.Font = Enum.Font.GothamBold
 keyBack.BorderSizePixel = 0
 keyBack.Parent = keyPage
@@ -357,23 +358,23 @@ mkCorner(scriptBtn, 8)
 mkStroke(scriptBtn, palette.divider, 1)
 
 local scriptTitle = Instance.new("TextLabel")
-scriptTitle.Size = UDim2.new(1, -20, 0, 30)
+scriptTitle.Size = UDim2.new(1, -20, 0, 35)
 scriptTitle.Position = UDim2.new(0, 15, 0, 6)
 scriptTitle.BackgroundTransparency = 1
 scriptTitle.Text = "Tower Defense Simulator"
 scriptTitle.TextColor3 = palette.textMain
-scriptTitle.TextSize = 17
+scriptTitle.TextSize = 26 -- 1.5x from 17
 scriptTitle.Font = Enum.Font.GothamBold
 scriptTitle.TextXAlignment = Enum.TextXAlignment.Left
 scriptTitle.Parent = scriptBtn
 
 local scriptDesc = Instance.new("TextLabel")
-scriptDesc.Size = UDim2.new(1, -20, 0, 20)
+scriptDesc.Size = UDim2.new(1, -20, 0, 25)
 scriptDesc.Position = UDim2.new(0, 15, 0, 32)
 scriptDesc.BackgroundTransparency = 1
 scriptDesc.Text = "Click to run TDS modules (Auto Farm, Macros, etc.)"
 scriptDesc.TextColor3 = palette.textMuted
-scriptDesc.TextSize = 12
+scriptDesc.TextSize = 18 -- 1.5x from 12
 scriptDesc.Font = Enum.Font.Gotham
 scriptDesc.TextXAlignment = Enum.TextXAlignment.Left
 scriptDesc.Parent = scriptBtn
@@ -390,23 +391,23 @@ mkCorner(mergeNukeBtn, 8)
 mkStroke(mergeNukeBtn, palette.divider, 1)
 
 local mergeNukeTitle = Instance.new("TextLabel")
-mergeNukeTitle.Size = UDim2.new(1, -20, 0, 30)
+mergeNukeTitle.Size = UDim2.new(1, -20, 0, 35)
 mergeNukeTitle.Position = UDim2.new(0, 15, 0, 6)
 mergeNukeTitle.BackgroundTransparency = 1
 mergeNukeTitle.Text = "Merge Nuke"
 mergeNukeTitle.TextColor3 = palette.textMain
-mergeNukeTitle.TextSize = 17
+mergeNukeTitle.TextSize = 26 -- 1.5x from 17
 mergeNukeTitle.Font = Enum.Font.GothamBold
 mergeNukeTitle.TextXAlignment = Enum.TextXAlignment.Left
 mergeNukeTitle.Parent = mergeNukeBtn
 
 local mergeNukeDesc = Instance.new("TextLabel")
-mergeNukeDesc.Size = UDim2.new(1, -20, 0, 20)
+mergeNukeDesc.Size = UDim2.new(1, -20, 0, 25)
 mergeNukeDesc.Position = UDim2.new(0, 15, 0, 32)
 mergeNukeDesc.BackgroundTransparency = 1
 mergeNukeDesc.Text = "Click to run Merge Nuke modules (Auto Merge, etc.)"
 mergeNukeDesc.TextColor3 = palette.textMuted
-mergeNukeDesc.TextSize = 12
+mergeNukeDesc.TextSize = 18 -- 1.5x from 12
 mergeNukeDesc.Font = Enum.Font.Gotham
 mergeNukeDesc.TextXAlignment = Enum.TextXAlignment.Left
 mergeNukeDesc.Parent = mergeNukeBtn
@@ -428,7 +429,7 @@ comingTitle.Position = UDim2.new(0, 15, 0, 0)
 comingTitle.BackgroundTransparency = 1
 comingTitle.Text = "Other Games Coming Soon..."
 comingTitle.TextColor3 = palette.textMuted
-comingTitle.TextSize = 15
+comingTitle.TextSize = 23 -- 1.5x from 15
 comingTitle.Font = Enum.Font.GothamBold
 comingTitle.TextXAlignment = Enum.TextXAlignment.Left
 comingTitle.Parent = comingSoon
