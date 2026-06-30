@@ -10,6 +10,8 @@ local _uis = game:GetService("UserInputService")
 local _rs  = game:GetService("RunService")
 local _http = game:GetService("HttpService")
 
+-- Macro system state (local untuk Main.lua hook-based recording)
+-- Ini TERPISAH dari _G.BorcaMacro yang dipakai recorder v1.lua
 local _recording = false
 local _replaying = false
 local _startTick = 0
@@ -130,24 +132,44 @@ mkCorner(mainFrame, 16)
 local borderGlow = mkStroke(mainFrame, Color3.fromRGB(255, 255, 255), 3)
 mkGradient(borderGlow, palette.accent, palette.gold, 45)
 
--- CAHAYA LIGHT DI SETIAP SUDUT (CORNER GLOWS)
-local function createCornerLight(name, pos, anchor)
-    local light = Instance.new("ImageLabel")
-    light.Name = name
-    light.AnchorPoint = anchor
-    light.Position = pos
-    light.Size = UDim2.new(0, 120, 0, 120)
-    light.BackgroundTransparency = 1
-    light.Image = "rbxassetid://5028857084"
-    light.ImageColor3 = (name:find("Gold")) and palette.gold or palette.accent
-    light.ImageTransparency = 0.4
-    light.ZIndex = -1
-    light.Parent = mainFrame
+-- CAHAYA CORNER GLOW DI 4 SUDUT (masing-masing 2 layer: Biru + Kuning, menjorok keluar)
+local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
+    -- Layer 1 (besar)
+    local g1 = Instance.new("ImageLabel")
+    g1.Name = name .. "_1"
+    g1.Size = UDim2.new(0, 140, 0, 140)
+    g1.Position = UDim2.new(xScale, xOff, yScale, yOff)
+    g1.AnchorPoint = Vector2.new(0.5, 0.5)
+    g1.BackgroundTransparency = 1
+    g1.Image = "rbxassetid://5028857084"
+    g1.ImageColor3 = color1
+    g1.ImageTransparency = 0.2
+    g1.ZIndex = -1
+    g1.Parent = mainFrame
+    _ts:Create(g1, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
+    _ts:Create(g1, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.5}):Play()
+    
+    -- Layer 2 (lebih kecil, warna berbeda, rotasi berlawanan)
+    local g2 = Instance.new("ImageLabel")
+    g2.Name = name .. "_2"
+    g2.Size = UDim2.new(0, 80, 0, 80)
+    g2.Position = UDim2.new(xScale, xOff, yScale, yOff)
+    g2.AnchorPoint = Vector2.new(0.5, 0.5)
+    g2.BackgroundTransparency = 1
+    g2.Image = "rbxassetid://5028857084"
+    g2.ImageColor3 = color2
+    g2.ImageTransparency = 0.3
+    g2.ZIndex = -1
+    g2.Parent = mainFrame
+    _ts:Create(g2, TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = -360}):Play()
+    _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
 end
-createCornerLight("TopLeftGlow", UDim2.new(0, 0, 0, 0), Vector2.new(0.5, 0.5))
-createCornerLight("TopRightGlowGold", UDim2.new(1, 0, 0, 0), Vector2.new(0.5, 0.5))
-createCornerLight("BottomLeftGlowGold", UDim2.new(0, 0, 1, 0), Vector2.new(0.5, 0.5))
-createCornerLight("BottomRightGlow", UDim2.new(1, 0, 1, 0), Vector2.new(0.5, 0.5))
+
+-- 4 SUDUT menjorok keluar: Kiri Atas (BIRU+KUNING), Kanan Atas (KUNING+BIRU), Kiri Bawah (KUNING+BIRU), Kanan Bawah (BIRU+KUNING)
+createCornerGlow("TL", 0, -25, 0, -25, palette.accent, palette.gold)
+createCornerGlow("TR", 1, 25, 0, -25, palette.gold, palette.accent)
+createCornerGlow("BL", 0, -25, 1, 25, palette.gold, palette.accent)
+createCornerGlow("BR", 1, 25, 1, 25, palette.accent, palette.gold)
 
 -- Intro Animation
 mainFrame.Size = UDim2.new(0, 0, 0, 0)
