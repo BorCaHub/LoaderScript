@@ -17,7 +17,7 @@ local _activeLoops = {}
 -- ================================================
 local AutoMerge = {}
 local success, result = pcall(function()
-    return loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/auto_merge.lua'))()
+    return loadstring(game:HttpGet('https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/Feature/eauto_merge.lua'))()
 end)
 
 if success and result then
