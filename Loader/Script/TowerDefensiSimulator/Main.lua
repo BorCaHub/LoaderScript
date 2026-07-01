@@ -1,5 +1,5 @@
 --[[ 
-    BorcaHub // TDS Module
+    Ocean Hub // TDS Module
     rev.ULTIMATE — Cyberpunk Neon Handcrafted Interface with Integrated Timed Macro V1
 ]]
 
@@ -102,15 +102,15 @@ end
 -- Remove old GUI
 -- ================================================
 local _core = game:GetService("CoreGui")
-if _core:FindFirstChild("BorcaHubTDS") then
-    _core.BorcaHubTDS:Destroy()
+if _core:FindFirstChild("OceanHubTDS") then
+    _core.OceanHubTDS:Destroy()
 end
 
 -- ================================================
 -- MAIN GUI STRUCTURE - OCEAN WAVE DESIGN
 -- ================================================
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BorcaHubTDS"
+screenGui.Name = "OceanHubTDS"
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
 
@@ -194,7 +194,7 @@ titleText.Name = "Title"
 titleText.Size = UDim2.new(0, 400, 1, 0)
 titleText.Position = UDim2.new(0, 24, 0, 0)
 titleText.BackgroundTransparency = 1
-titleText.Text = "BORCA HUB"
+titleText.Text = "OCEAN HUB"
 titleText.TextColor3 = palette.textMain
 titleText.TextSize = 32
 titleText.Font = Enum.Font.GothamBold

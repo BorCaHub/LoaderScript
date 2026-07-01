@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Merge Nuke - Auto Merge
+    Ocean Hub // Merge Nuke - Auto Merge
     Automatically merges nukes when they are ready
 ]]
 
@@ -51,14 +51,14 @@ end
 -- Main auto merge loop
 function AutoMerge.Start()
     if AutoMerge.Enabled then
-        warn("[BorcaHub] Auto Merge already running!")
+        warn("[Ocean Hub] Auto Merge already running!")
         return false
     end
     
     AutoMerge.Enabled = true
     AutoMerge.MergedCount = 0
     
-    warn("[BorcaHub] Auto Merge started!")
+    warn("[Ocean Hub] Auto Merge started!")
     
     AutoMerge.Loop = _rs.Heartbeat:Connect(function()
         if not AutoMerge.Enabled then
@@ -91,7 +91,7 @@ function AutoMerge.Stop()
         AutoMerge.Loop = nil
     end
     
-    warn("[BorcaHub] Auto Merge stopped! Total merged: " .. AutoMerge.MergedCount)
+    warn("[Ocean Hub] Auto Merge stopped! Total merged: " .. AutoMerge.MergedCount)
     return true
 end
 

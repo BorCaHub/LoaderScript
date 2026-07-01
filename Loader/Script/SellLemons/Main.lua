@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Sell Lemons Module
+    Ocean Hub // Sell Lemons Module
     Auto Sell Lemons, Buy Button, & Money Upgrade Features
     Ocean Wave Theme with Corner Lightning Effects
 ]]
@@ -73,8 +73,8 @@ end
 -- Remove old GUI
 -- ================================================
 local _core = game:GetService("CoreGui")
-if _core:FindFirstChild("BorcaHubSellLemons") then
-    _core.BorcaHubSellLemons:Destroy()
+if _core:FindFirstChild("OceanHubSellLemons") then
+    _core.OceanHubSellLemons:Destroy()
 end
 
 -- ================================================
@@ -138,7 +138,7 @@ local config = getDeviceConfig()
 -- MAIN GUI STRUCTURE
 -- ================================================
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BorcaHubSellLemons"
+screenGui.Name = "OceanHubSellLemons"
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
 

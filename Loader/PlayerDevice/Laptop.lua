@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Laptop Device Configuration
+    Ocean Hub // Laptop Device Configuration
     Device: Laptop (Smaller screen than PC)
 ]]
 return {

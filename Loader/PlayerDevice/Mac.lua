@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Mac Device Configuration
+    Ocean Hub // Mac Device Configuration
     Device: Mac (Similar to PC but with retina scaling)
 ]]
 return {

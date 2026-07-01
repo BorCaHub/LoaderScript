@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Phone Device Configuration
+    Ocean Hub // Phone Device Configuration
     Device: Mobile Phone (Small Screen)
 ]]
 return {

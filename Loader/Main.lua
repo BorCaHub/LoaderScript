@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Loader Module
+    Ocean Hub // Loader Module
     Custom UI Loader with Ocean Wave Handcrafted UI
     Dynamic Device Detection System
 ]]
@@ -154,12 +154,12 @@ local config = loadDeviceConfig(deviceType)
 
 -- Remove old loader
 local _core = game:GetService("CoreGui")
-if _core:FindFirstChild("BorcaHubLoader") then
-    _core.BorcaHubLoader:Destroy()
+if _core:FindFirstChild("OceanHubLoader") then
+    _core.OceanHubLoader:Destroy()
 end
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BorcaHubLoader"
+screenGui.Name = "OceanHubLoader"
 screenGui.ResetOnSpawn = false
 local ok, _ = pcall(function() screenGui.Parent = _core end)
 if not ok then screenGui.Parent = _plr:WaitForChild("PlayerGui") end
@@ -225,7 +225,7 @@ local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(1, -80, 0, 45)
 titleText.Position = UDim2.new(0, 20, 0, 2)
 titleText.BackgroundTransparency = 1
-titleText.Text = "BORCA HUB"
+titleText.Text = "OCEAN HUB"
 titleText.TextColor3 = palette.textMain
 titleText.TextSize = 28
 titleText.Font = Enum.Font.GothamBold

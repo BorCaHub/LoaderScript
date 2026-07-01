@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // PC Device Configuration
+    Ocean Hub // PC Device Configuration
     Device: Desktop/Computer (Windows/Mac/Linux)
 ]]
 return {

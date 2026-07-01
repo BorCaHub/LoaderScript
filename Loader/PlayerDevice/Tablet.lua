@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // Tablet Device Configuration
+    Ocean Hub // Tablet Device Configuration
     Device: Tablet/iPad (Medium Screen)
 ]]
 return {

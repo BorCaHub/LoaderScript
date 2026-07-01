@@ -1,5 +1,5 @@
 --[[
-    BorcaHub // TDS Macro v1 - Time Based Recorder
+    Ocean Hub // TDS Macro v1 - Time Based Recorder
     Records and plays back tower placements with precise timing
     v2 Enhanced: Map change persistence, UI overlay, keyboard shortcuts
 ]]

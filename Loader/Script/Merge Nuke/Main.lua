@@ -1,5 +1,5 @@
 --[[ 
-    BorcaHub // Merge Nuke Module
+    Ocean Hub // Merge Nuke Module
     rev.ULTIMATE — Cyberpunk Neon Handcrafted Interface
 ]]
 
@@ -22,9 +22,9 @@ end)
 
 if success and result then
     AutoMerge = result
-    warn("[BorcaHub] Auto Merge module loaded successfully!")
+    warn("[Ocean Hub] Auto Merge module loaded successfully!")
 else
-    warn("[BorcaHub] Failed to load auto merge module: " .. tostring(result))
+    warn("[Ocean Hub] Failed to load auto merge module: " .. tostring(result))
     -- Create stub functions
     AutoMerge = {
         Start = function() warn("Auto Merge not loaded") return false end,
@@ -137,15 +137,15 @@ end
 -- Remove old GUI
 -- ================================================
 local _core = game:GetService("CoreGui")
-if _core:FindFirstChild("BorcaHubMergeNuke") then
-    _core.BorcaHubMergeNuke:Destroy()
+if _core:FindFirstChild("OceanHubMergeNuke") then
+    _core.OceanHubMergeNuke:Destroy()
 end
 
 -- ================================================
 -- MAIN GUI STRUCTURE - OCEAN WAVE DESIGN
 -- ================================================
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BorcaHubMergeNuke"
+screenGui.Name = "OceanHubMergeNuke"
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
 
