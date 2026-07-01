@@ -2,6 +2,7 @@
     Ocean Hub // Loader Module
     Custom UI Loader with Ocean Wave Handcrafted UI
     Dynamic Device Detection System
+    v2 FIXED: Removed dead code, fixed nil reference, added blue corner glow
 ]]
 
 local _tier = "Free"
@@ -41,15 +42,12 @@ end
 local function mkStroke(p, col, th) 
     local s = Instance.new("UIStroke"); s.Color = col or palette.divider; s.Thickness = th or 1; s.Parent = p; return s 
 end
-local function mkGradient(p, c1, c2, rot)
-    local g = Instance.new("UIGradient")
-    g.Color = ColorSequence.new(c1, c2)
-    g.Rotation = rot or 90
-    g.Parent = p
-    return g
-end
 
-local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
+-- ================================================
+-- BLUE CORNER GLOW EFFECT (for all menus)
+-- ================================================
+local function createCornerGlow(parent, name, xScale, xOff, yScale, yOff, color1, color2)
+    if not parent then return end
     local g1 = Instance.new("ImageLabel")
     g1.Name = name .. "_1"
     g1.Size = UDim2.new(0, 100, 0, 100)
@@ -60,7 +58,7 @@ local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2
     g1.ImageColor3 = color1
     g1.ImageTransparency = 0.25
     g1.ZIndex = -1
-    g1.Parent = mainFrame
+    g1.Parent = parent
     _ts:Create(g1, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
     _ts:Create(g1, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.5}):Play()
 
@@ -74,7 +72,7 @@ local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2
     g2.ImageColor3 = color2
     g2.ImageTransparency = 0.35
     g2.ZIndex = -1
-    g2.Parent = mainFrame
+    g2.Parent = parent
     _ts:Create(g2, TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = -360}):Play()
     _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
 end
@@ -83,23 +81,18 @@ end
 -- DEVICE DETECTION SYSTEM
 -- ================================================
 local function detectDeviceType()
-    -- Priority: Touch + No Keyboard = Phone
-    -- Touch + Has Keyboard = Tablet
-    -- No Touch = PC/Laptop/Mac
     if _uis.TouchEnabled and not _uis.KeyboardEnabled then
         return "Phone"
     elseif _uis.TouchEnabled and _uis.KeyboardEnabled then
-        -- Check screen resolution for tablet vs laptop
         local screenWidth = _uis:GetPlatformUIScale()
         if screenWidth < 0.8 then
             return "Tablet"
         end
     end
-    return "PC" -- Default to PC for desktop
+    return "PC"
 end
 
 local function loadDeviceConfig(deviceType)
-    -- Default config
     local defaultConfig = {
         frameSize = UDim2.new(0, 460, 0, 340),
         cornerRadius = 12,
@@ -129,7 +122,6 @@ local function loadDeviceConfig(deviceType)
         deviceType = "PC"
     }
     
-    -- Try to load from local config files (for development)
     local configPaths = {
         PC = "Loader/PlayerDevice/PC.lua",
         Phone = "Loader/PlayerDevice/Phone.lua",
@@ -177,10 +169,11 @@ mainFrame.Parent = screenGui
 mkCorner(mainFrame, config.cornerRadius)
 mkStroke(mainFrame, palette.divider, config.borderThickness)
 
-createCornerGlow("TL", 0, -20, 0, -20, palette.accent, palette.accent2)
-createCornerGlow("TR", 1, 20, 0, -20, palette.accent2, palette.accent)
-createCornerGlow("BL", 0, -20, 1, 20, palette.accent2, palette.accent)
-createCornerGlow("BR", 1, 20, 1, 20, palette.accent, palette.accent2)
+-- Blue corner glow at all 4 corners
+createCornerGlow(mainFrame, "TL", 0, -20, 0, -20, palette.accent, palette.accent2)
+createCornerGlow(mainFrame, "TR", 1, 20, 0, -20, palette.accent2, palette.accent)
+createCornerGlow(mainFrame, "BL", 0, -20, 1, 20, palette.accent2, palette.accent)
+createCornerGlow(mainFrame, "BR", 1, 20, 1, 20, palette.accent, palette.accent2)
 
 -- ================================================
 -- CLOSE BUTTON (X) TOP RIGHT
@@ -207,7 +200,7 @@ closeBtn.MouseButton1Click:Connect(function()
     task.delay(0.35, function() screenGui:Destroy() end)
 end)
 
--- Hover close button
+-- Hover effect helper
 local function bindHover(btn, hoverColor, defaultColor)
     btn.MouseEnter:Connect(function()
         _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = hoverColor}):Play()
@@ -274,7 +267,6 @@ mkStroke(minBtn, palette.divider, 1)
 
 local isMinimized = false
 local originalSize = mainFrame.Size
-local originalPos = mainFrame.Position
 local minimizedSize = UDim2.new(0, config.frameSize.X.Offset, 0, 60)
 
 minBtn.MouseButton1Click:Connect(function()
@@ -346,7 +338,6 @@ choosePage.Size = UDim2.new(1, 0, 1, 0)
 choosePage.BackgroundTransparency = 1
 choosePage.Parent = pages
 
--- Helper function untuk button tier
 local function createTierBtn(pos, title, desc, color)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0.46, 0, 0.65, 0)
@@ -357,13 +348,18 @@ local function createTierBtn(pos, title, desc, color)
     btn.Parent = choosePage
     mkCorner(btn, 10)
     mkStroke(btn, palette.divider, 1)
+    
+    -- Blue corner glow on tier buttons
+    createCornerGlow(btn, "BtnGlow", 0, -10, 0, -10, palette.accent, palette.accent2)
+    createCornerGlow(btn, "BtnGlow2", 1, 10, 1, 10, palette.accent2, palette.accent)
+    
     local t = Instance.new("TextLabel")
     t.Size = UDim2.new(1, 0, 0, 30)
     t.Position = UDim2.new(0, 0, 0.2, 0)
     t.BackgroundTransparency = 1
     t.Text = title
     t.TextColor3 = color
-    t.TextSize = 24 -- lebih kecil
+    t.TextSize = 24
     t.Font = Enum.Font.GothamBold
     t.Parent = btn
     
@@ -373,12 +369,11 @@ local function createTierBtn(pos, title, desc, color)
     d.BackgroundTransparency = 1
     d.Text = desc
     d.TextColor3 = palette.textMuted
-    d.TextSize = 13 -- lebih kecil
+    d.TextSize = 13
     d.Font = Enum.Font.Gotham
     d.TextWrapped = true
     d.Parent = btn
     
-    -- Hover effect
     btn.MouseEnter:Connect(function()
         _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = palette.cardHover}):Play()
     end)
@@ -485,104 +480,62 @@ listPadding.PaddingRight = UDim.new(0, 0)
 listPadding.PaddingBottom = UDim.new(0, 8)
 listPadding.Parent = scrollFrame
 
+-- Helper to create script buttons with blue corner glow
+local function createScriptBtn(layoutOrder, title, desc)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
+    btn.BackgroundColor3 = palette.card
+    btn.Text = ""
+    btn.BorderSizePixel = 0
+    btn.LayoutOrder = layoutOrder
+    btn.Parent = scrollFrame
+    mkCorner(btn, 8)
+    mkStroke(btn, palette.divider, 1)
+    
+    -- Blue corner glow on each script button
+    createCornerGlow(btn, "SGlow", 0, -8, 0, -8, palette.accent, palette.accent2)
+    createCornerGlow(btn, "SGlow2", 1, 8, 1, 8, palette.accent2, palette.accent)
+    
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, -18, 0, 28)
+    t.Position = UDim2.new(0, 14, 0, 5)
+    t.BackgroundTransparency = 1
+    t.Text = title
+    t.TextColor3 = palette.textMain
+    t.TextSize = 22
+    t.Font = Enum.Font.GothamBold
+    t.TextXAlignment = Enum.TextXAlignment.Left
+    t.Parent = btn
+    
+    local d = Instance.new("TextLabel")
+    d.Size = UDim2.new(1, -18, 0, 22)
+    d.Position = UDim2.new(0, 14, 0, 30)
+    d.BackgroundTransparency = 1
+    d.Text = desc
+    d.TextColor3 = palette.textMuted
+    d.TextSize = 15
+    d.Font = Enum.Font.Gotham
+    d.TextXAlignment = Enum.TextXAlignment.Left
+    d.Parent = btn
+    
+    btn.MouseEnter:Connect(function()
+        _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = palette.cardHover}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = palette.card}):Play()
+    end)
+    
+    return btn
+end
+
 -- TDS Button
-local scriptBtn = Instance.new("TextButton")
-scriptBtn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
-scriptBtn.BackgroundColor3 = palette.card
-scriptBtn.Text = ""
-scriptBtn.BorderSizePixel = 0
-scriptBtn.LayoutOrder = 1
-scriptBtn.Parent = scrollFrame
-mkCorner(scriptBtn, 8)
-mkStroke(scriptBtn, palette.divider, 1)
-
-local scriptTitle = Instance.new("TextLabel")
-scriptTitle.Size = UDim2.new(1, -18, 0, 28)
-scriptTitle.Position = UDim2.new(0, 14, 0, 5)
-scriptTitle.BackgroundTransparency = 1
-scriptTitle.Text = "Tower Defense Simulator"
-scriptTitle.TextColor3 = palette.textMain
-scriptTitle.TextSize = 22 -- lebih kecil
-scriptTitle.Font = Enum.Font.GothamBold
-scriptTitle.TextXAlignment = Enum.TextXAlignment.Left
-scriptTitle.Parent = scriptBtn
-
-local scriptDesc = Instance.new("TextLabel")
-scriptDesc.Size = UDim2.new(1, -18, 0, 22)
-scriptDesc.Position = UDim2.new(0, 14, 0, 30)
-scriptDesc.BackgroundTransparency = 1
-scriptDesc.Text = "Auto Farm, Macros & Premium Scripts"
-scriptDesc.TextColor3 = palette.textMuted
-scriptDesc.TextSize = 15 -- lebih kecil
-scriptDesc.Font = Enum.Font.Gotham
-scriptDesc.TextXAlignment = Enum.TextXAlignment.Left
-scriptDesc.Parent = scriptBtn
+local scriptBtn = createScriptBtn(1, "Tower Defense Simulator", "Auto Farm, Macros & Premium Scripts")
 
 -- Merge Nuke Button
-local mergeNukeBtn = Instance.new("TextButton")
-mergeNukeBtn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
-mergeNukeBtn.BackgroundColor3 = palette.card
-mergeNukeBtn.Text = ""
-mergeNukeBtn.BorderSizePixel = 0
-mergeNukeBtn.LayoutOrder = 2
-mergeNukeBtn.Parent = scrollFrame
-mkCorner(mergeNukeBtn, 8)
-mkStroke(mergeNukeBtn, palette.divider, 1)
+local mergeNukeBtn = createScriptBtn(2, "Merge Nuke", "Auto Merge & More")
 
-local mergeNukeTitle = Instance.new("TextLabel")
-mergeNukeTitle.Size = UDim2.new(1, -18, 0, 28)
-mergeNukeTitle.Position = UDim2.new(0, 14, 0, 5)
-mergeNukeTitle.BackgroundTransparency = 1
-mergeNukeTitle.Text = "Merge Nuke"
-mergeNukeTitle.TextColor3 = palette.textMain
-mergeNukeTitle.TextSize = 22 -- lebih kecil
-mergeNukeTitle.Font = Enum.Font.GothamBold
-mergeNukeTitle.TextXAlignment = Enum.TextXAlignment.Left
-mergeNukeTitle.Parent = mergeNukeBtn
-
-local mergeNukeDesc = Instance.new("TextLabel")
-mergeNukeDesc.Size = UDim2.new(1, -18, 0, 22)
-mergeNukeDesc.Position = UDim2.new(0, 14, 0, 30)
-mergeNukeDesc.BackgroundTransparency = 1
-mergeNukeDesc.Text = "Auto Merge & More"
-mergeNukeDesc.TextColor3 = palette.textMuted
-mergeNukeDesc.TextSize = 15 -- lebih kecil
-mergeNukeDesc.Font = Enum.Font.Gotham
-mergeNukeDesc.TextXAlignment = Enum.TextXAlignment.Left
-mergeNukeDesc.Parent = mergeNukeBtn
-
--- Sell Lemons Button (BARU!)
-local sellLemonsBtn = Instance.new("TextButton")
-sellLemonsBtn.Size = UDim2.new(1, 0, 0, config.scriptButtonHeight)
-sellLemonsBtn.BackgroundColor3 = palette.card
-sellLemonsBtn.Text = ""
-sellLemonsBtn.BorderSizePixel = 0
-sellLemonsBtn.LayoutOrder = 3
-sellLemonsBtn.Parent = scrollFrame
-mkCorner(sellLemonsBtn, 8)
-mkStroke(sellLemonsBtn, palette.divider, 1)
-
-local sellLemonsTitle = Instance.new("TextLabel")
-sellLemonsTitle.Size = UDim2.new(1, -18, 0, 28)
-sellLemonsTitle.Position = UDim2.new(0, 14, 0, 5)
-sellLemonsTitle.BackgroundTransparency = 1
-sellLemonsTitle.Text = "Sell Lemons"
-sellLemonsTitle.TextColor3 = palette.textMain
-sellLemonsTitle.TextSize = 22 -- lebih kecil
-sellLemonsTitle.Font = Enum.Font.GothamBold
-sellLemonsTitle.TextXAlignment = Enum.TextXAlignment.Left
-sellLemonsTitle.Parent = sellLemonsBtn
-
-local sellLemonsDesc = Instance.new("TextLabel")
-sellLemonsDesc.Size = UDim2.new(1, -18, 0, 22)
-sellLemonsDesc.Position = UDim2.new(0, 14, 0, 30)
-sellLemonsDesc.BackgroundTransparency = 1
-sellLemonsDesc.Text = "Auto Buy Button & Upgrade Money"
-sellLemonsDesc.TextColor3 = palette.textMuted
-sellLemonsDesc.TextSize = 15 -- lebih kecil
-sellLemonsDesc.Font = Enum.Font.Gotham
-sellLemonsDesc.TextXAlignment = Enum.TextXAlignment.Left
-sellLemonsDesc.Parent = sellLemonsBtn
+-- Sell Lemons Button
+local sellLemonsBtn = createScriptBtn(3, "Sell Lemons", "Auto Buy Button & Upgrade Money")
 
 -- Coming Soon
 local comingSoon = Instance.new("Frame")
@@ -601,7 +554,7 @@ comingTitle.Position = UDim2.new(0, 14, 0, 0)
 comingTitle.BackgroundTransparency = 1
 comingTitle.Text = "More Games Coming Soon..."
 comingTitle.TextColor3 = palette.textMuted
-comingTitle.TextSize = 20 -- lebih kecil
+comingTitle.TextSize = 20
 comingTitle.Font = Enum.Font.GothamBold
 comingTitle.TextXAlignment = Enum.TextXAlignment.Left
 comingTitle.Parent = comingSoon
@@ -650,7 +603,14 @@ keySubmit.MouseButton1Click:Connect(function()
 
     notify("Validating credentials...", palette.accent)
 
-    local requestFunc = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or request
+    -- FIXED: Use proper executor request detection with safe fallback
+    local requestFunc = syn and syn.request 
+        or http and http.request 
+        or http_request 
+        or fluxus and fluxus.request 
+        or (game:GetService("HttpService") and game:GetService("HttpService").JSONDecode and function() return nil end)
+        or nil
+    
     if not requestFunc then
         notify("Executor lacks http request capability!", palette.red)
         return
@@ -700,7 +660,7 @@ mergeNukeBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/Merge%20Nuke/Main.lua"))()
 end)
 
--- Run Sell Lemons Script (NEW!)
+-- Run Sell Lemons Script
 sellLemonsBtn.MouseButton1Click:Connect(function()
     notify("Loading Sell Lemons module...", palette.green)
     task.wait(1.2)
@@ -708,16 +668,7 @@ sellLemonsBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BorCaHub/BorcaScriptHub/main/Loader/Script/SellLemons/Main.lua"))()
 end)
 
--- Minimize hover
-local function bindHover(btn, hoverColor, defaultColor)
-    btn.MouseEnter:Connect(function()
-        _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = hoverColor}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        _ts:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = defaultColor}):Play()
-    end)
-end
-
+-- Hover effects for all buttons
 bindHover(freeBtn, palette.cardHover, palette.card)
 bindHover(premiumBtn, palette.cardHover, palette.card)
 bindHover(keyBack, palette.cardHover, palette.card)

@@ -1,6 +1,7 @@
 --[[ 
     Ocean Hub // Merge Nuke Module
     rev.ULTIMATE — Cyberpunk Neon Handcrafted Interface
+    v2 FIXED: indentation, blue corner glow on all elements
 ]]
 
 local _tier = getgenv().Tier or "Free"
@@ -25,7 +26,6 @@ if success and result then
     warn("[Ocean Hub] Auto Merge module loaded successfully!")
 else
     warn("[Ocean Hub] Failed to load auto merge module: " .. tostring(result))
-    -- Create stub functions
     AutoMerge = {
         Start = function() warn("Auto Merge not loaded") return false end,
         Stop = function() warn("Auto Merge not loaded") return false end,
@@ -58,35 +58,6 @@ local palette = {
     glow      = Color3.fromRGB(0, 180, 216),
 }
 
--- ================================================
--- DAFTAR FITUR
--- ================================================
-local featureList = {
-    {
-        id = "auto_merge",
-        name = "Auto Merge",
-        desc = "Automatically merge nukes when they are ready. Set your preferred merge delay and let it run automatically.",
-        tier = "premium",
-        reqLevel = "Level 0+",
-        towers = "Any Nuke",
-        map = "Any Map",
-        running = false,
-    },
-    {
-        id = "example_free",
-        name = "Example Free Feature",
-        desc = "This is a free feature accessible to all players (Free & Premium).",
-        tier = "free",
-        reqLevel = "Level 0+",
-        towers = "Any",
-        map = "Any",
-        running = false,
-    },
-}
-
--- ================================================
--- GUI UTILITIES
--- ================================================
 local function mkCorner(p, r) 
     local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, r or 12); c.Parent = p; return c 
 end
@@ -103,7 +74,8 @@ local function mkGradient(p, c1, c2, rot)
     g.Parent = p
     return g
 end
-local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
+local function createCornerGlow(parent, name, xScale, xOff, yScale, yOff, color1, color2)
+    if not parent then return end
     local g1 = Instance.new("ImageLabel")
     g1.Name = name .. "_1"
     g1.Size = UDim2.new(0, 100, 0, 100)
@@ -114,7 +86,7 @@ local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2
     g1.ImageColor3 = color1
     g1.ImageTransparency = 0.25
     g1.ZIndex = -1
-    g1.Parent = mainFrame
+    g1.Parent = parent
     _ts:Create(g1, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
     _ts:Create(g1, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.5}):Play()
 
@@ -128,7 +100,7 @@ local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2
     g2.ImageColor3 = color2
     g2.ImageTransparency = 0.35
     g2.ZIndex = -1
-    g2.Parent = mainFrame
+    g2.Parent = parent
     _ts:Create(g2, TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = -360}):Play()
     _ts:Create(g2, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {ImageTransparency = 0.6}):Play()
 end
@@ -142,7 +114,7 @@ if _core:FindFirstChild("OceanHubMergeNuke") then
 end
 
 -- ================================================
--- MAIN GUI STRUCTURE - OCEAN WAVE DESIGN
+-- MAIN GUI STRUCTURE
 -- ================================================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "OceanHubMergeNuke"
@@ -152,7 +124,6 @@ screenGui.ResetOnSpawn = false
 local ok, _ = pcall(function() screenGui.Parent = _core end)
 if not ok then screenGui.Parent = _plr:WaitForChild("PlayerGui") end
 
--- Background blur effect
 local blur = Instance.new("Blur")
 blur.Size = 24
 blur.Parent = screenGui
@@ -168,10 +139,11 @@ mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 mkCorner(mainFrame, 24)
 
-createCornerGlow("TL", 0, -22, 0, -22, palette.accent, palette.accent2)
-createCornerGlow("TR", 1, 22, 0, -22, palette.accent2, palette.accent)
-createCornerGlow("BL", 0, -22, 1, 22, palette.accent2, palette.accent)
-createCornerGlow("BR", 1, 22, 1, 22, palette.accent, palette.accent2)
+-- Blue corner glow at 4 corners
+createCornerGlow(mainFrame, "TL", 0, -22, 0, -22, palette.accent, palette.accent2)
+createCornerGlow(mainFrame, "TR", 1, 22, 0, -22, palette.accent2, palette.accent)
+createCornerGlow(mainFrame, "BL", 0, -22, 1, 22, palette.accent2, palette.accent)
+createCornerGlow(mainFrame, "BR", 1, 22, 1, 22, palette.accent, palette.accent2)
 
 -- Animated ocean gradient background
 local bgGradient = Instance.new("UIGradient")
@@ -182,29 +154,6 @@ bgGradient.Color = ColorSequence.new({
 })
 bgGradient.Rotation = 45
 bgGradient.Parent = mainFrame
-
--- Ocean neon border with animated glow
-local borderFrame = Instance.new("Frame")
-borderFrame.Name = "NeonBorder"
-borderFrame.Size = UDim2.new(1, 4, 1, 4)
-borderFrame.Position = UDim2.new(0, -2, 0, -2)
-borderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-borderFrame.BackgroundTransparency = 1
-borderFrame.BorderSizePixel = 0
-borderFrame.ZIndex = 0
-borderFrame.Parent = mainFrame
-
-local borderStroke = Instance.new("UIStroke")
-borderStroke.Color = palette.accent
-borderStroke.Thickness = 3
-borderStroke.Transparency = 0.3
-borderStroke.Parent = borderFrame
-
-local borderGlow = Instance.new("UIStroke")
-borderGlow.Color = palette.accent2
-borderGlow.Thickness = 6
-borderGlow.Transparency = 0.7
-borderGlow.Parent = borderFrame
 
 -- Animated wave scanline effect
 local scanline = Instance.new("Frame")
@@ -222,7 +171,7 @@ local scanlineTween = _ts:Create(scanline, TweenInfo.new(3, Enum.EasingStyle.Lin
 })
 scanlineTween:Play()
 
--- Intro animation with scale and rotation
+-- Intro animation
 mainFrame.Size = UDim2.new(0, 0, 0, 0)
 mainFrame.Rotation = 180
 _ts:Create(mainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
@@ -231,7 +180,7 @@ _ts:Create(mainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDi
 }):Play()
 
 -- ================================================
--- TITLE BAR - OCEAN WAVE STYLE
+-- TITLE BAR
 -- ================================================
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
@@ -241,7 +190,7 @@ titleBar.BackgroundTransparency = 1
 titleBar.BorderSizePixel = 0
 titleBar.Parent = mainFrame
 
--- Glowing title background
+-- Title background
 local titleBg = Instance.new("Frame")
 titleBg.Name = "TitleBg"
 titleBg.Size = UDim2.new(1, -40, 0, 65)
@@ -252,39 +201,25 @@ titleBg.BorderSizePixel = 0
 titleBg.Parent = titleBar
 mkCorner(titleBg, 16)
 
-local titleGradient = Instance.new("UIGradient")
-titleGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, palette.card),
-    ColorSequenceKeypoint.new(0.5, palette.cardHover),
-    ColorSequenceKeypoint.new(1, palette.card)
-})
-titleGradient.Rotation = 90
-titleGradient.Parent = titleBg
-
-local titleStroke = Instance.new("UIStroke")
-titleStroke.Color = palette.accent
-titleStroke.Thickness = 2
-titleStroke.Transparency = 0.5
-titleStroke.Parent = titleBg
-
--- Title text with glow effect
+-- Title text (FIXED: proper indentation)
 local titleText = Instance.new("TextLabel")
 titleText.Name = "Title"
 titleText.Size = UDim2.new(0, 300, 1, 0)
 titleText.Position = UDim2.new(0, 30, 0, 0)
 titleText.BackgroundTransparency = 1
-    titleText.Text = "OCEAN HUB"
+titleText.Text = "OCEAN HUB"
 titleText.TextColor3 = palette.textMain
 titleText.TextSize = 36
 titleText.Font = Enum.Font.GothamBold
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.Parent = titleBg
 
-local titleGlow = Instance.new("TextStroke")
+-- Blue glow on title
+local titleGlow = Instance.new("UIStroke")
 titleGlow.Color = palette.accent
-titleGlow.Thickness = 2
-titleGlow.Transparency = 0.5
-titleText.TextStroke = titleGlow
+titleGlow.Thickness = 1
+titleGlow.Transparency = 0.7
+titleGlow.Parent = titleText
 
 local subtitleText = Instance.new("TextLabel")
 subtitleText.Name = "Subtitle"
@@ -298,7 +233,7 @@ subtitleText.Font = Enum.Font.GothamBold
 subtitleText.TextXAlignment = Enum.TextXAlignment.Left
 subtitleText.Parent = titleBg
 
--- Animated tier badge
+-- Tier badge
 local tagLabel = Instance.new("TextLabel")
 tagLabel.Name = "Tag"
 tagLabel.Size = UDim2.new(0, 100, 0, 32)
@@ -313,12 +248,7 @@ tagLabel.BorderSizePixel = 0
 tagLabel.Parent = titleBg
 mkCorner(tagLabel, 8)
 
-local tagStroke = Instance.new("UIStroke")
-tagStroke.Color = (_tier == "Premium") and palette.gold or palette.accent
-tagStroke.Thickness = 2
-tagStroke.Parent = tagLabel
-
--- Version with ocean style
+-- Version
 local versionLabel = Instance.new("TextLabel")
 versionLabel.Name = "Ver"
 versionLabel.Size = UDim2.new(0, 80, 0, 24)
@@ -333,7 +263,7 @@ versionLabel.BorderSizePixel = 0
 versionLabel.Parent = titleBg
 mkCorner(versionLabel, 4)
 
--- Close button with ocean design
+-- Close button
 local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
 closeBtn.Size = UDim2.new(0, 36, 0, 36)
@@ -348,11 +278,6 @@ closeBtn.BorderSizePixel = 0
 closeBtn.AutoButtonColor = false
 closeBtn.Parent = titleBg
 mkCorner(closeBtn, 8)
-
-local closeStroke = Instance.new("UIStroke")
-closeStroke.Color = palette.red
-closeStroke.Thickness = 2
-closeStroke.Parent = closeBtn
 
 -- Dragging Logic
 local dragging, dragStart, startPos
@@ -384,9 +309,7 @@ bodyFrame.BackgroundTransparency = 1
 bodyFrame.BorderSizePixel = 0
 bodyFrame.Parent = mainFrame
 
--- ================================================
--- LEFT PANEL - OCEAN WAVE LIST DESIGN
--- ================================================
+-- Left Panel
 local leftPanel = Instance.new("Frame")
 leftPanel.Name = "LeftPanel"
 leftPanel.Size = UDim2.new(0, 400, 1, -30)
@@ -396,21 +319,9 @@ leftPanel.BackgroundTransparency = 0.3
 leftPanel.BorderSizePixel = 0
 leftPanel.Parent = bodyFrame
 mkCorner(leftPanel, 20)
+mkStroke(leftPanel, palette.divider, 1)
 
-local leftStroke = Instance.new("UIStroke")
-leftStroke.Color = palette.divider
-leftStroke.Thickness = 1
-leftStroke.Transparency = 0.5
-leftStroke.Parent = leftPanel
-
-local leftGradient = Instance.new("UIGradient")
-leftGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, palette.sidebar),
-    ColorSequenceKeypoint.new(1, palette.panel)
-})
-leftGradient.Rotation = 90
-leftGradient.Parent = leftPanel
-
+-- Left header
 local leftHeader = Instance.new("Frame")
 leftHeader.Name = "Header"
 leftHeader.Size = UDim2.new(1, -20, 0, 55)
@@ -421,13 +332,9 @@ leftHeader.BorderSizePixel = 0
 leftHeader.Parent = leftPanel
 mkCorner(leftHeader, 12)
 
-local headerGradient = Instance.new("UIGradient")
-headerGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, palette.accent),
-    ColorSequenceKeypoint.new(1, palette.accent2)
-})
-headerGradient.Rotation = 45
-headerGradient.Parent = leftHeader
+-- Blue corner glow on header
+createCornerGlow(leftHeader, "LHGlow", 0, -8, 0, -8, palette.accent, palette.accent2)
+createCornerGlow(leftHeader, "LHGlow2", 1, 8, 1, 8, palette.accent2, palette.accent)
 
 local headerText = Instance.new("TextLabel")
 headerText.Size = UDim2.new(1, 0, 1, 0)
@@ -439,6 +346,7 @@ headerText.Font = Enum.Font.GothamBold
 headerText.TextXAlignment = Enum.TextXAlignment.Center
 headerText.Parent = leftHeader
 
+-- Scrollable feature list
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Name = "List"
 scrollFrame.Size = UDim2.new(1, -20, 1, -80)
@@ -457,7 +365,7 @@ listLayout.Padding = UDim.new(0, 10)
 listLayout.Parent = scrollFrame
 
 -- ================================================
--- RIGHT PANEL - OCEAN WAVE INFO PANEL
+-- RIGHT PANEL
 -- ================================================
 local rightPanel = Instance.new("Frame")
 rightPanel.Name = "RightPanel"
@@ -468,20 +376,7 @@ rightPanel.BackgroundTransparency = 0.2
 rightPanel.BorderSizePixel = 0
 rightPanel.Parent = bodyFrame
 mkCorner(rightPanel, 20)
-
-local rightGradient = Instance.new("UIGradient")
-rightGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, palette.panel),
-    ColorSequenceKeypoint.new(1, palette.sidebar)
-})
-rightGradient.Rotation = 90
-rightGradient.Parent = rightPanel
-
-local rightStroke = Instance.new("UIStroke")
-rightStroke.Color = palette.divider
-rightStroke.Thickness = 1
-rightStroke.Transparency = 0.5
-rightStroke.Parent = rightPanel
+mkStroke(rightPanel, palette.divider, 1)
 
 local infoHeader = Instance.new("Frame")
 infoHeader.Name = "Header"
@@ -493,13 +388,9 @@ infoHeader.BorderSizePixel = 0
 infoHeader.Parent = rightPanel
 mkCorner(infoHeader, 12)
 
-local infoHeaderGradient = Instance.new("UIGradient")
-infoHeaderGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, palette.accent2),
-    ColorSequenceKeypoint.new(1, palette.accent)
-})
-infoHeaderGradient.Rotation = 45
-infoHeaderGradient.Parent = infoHeader
+-- Blue corner glow on info header
+createCornerGlow(infoHeader, "IHGlow", 0, -8, 0, -8, palette.accent2, palette.accent)
+createCornerGlow(infoHeader, "IHGlow2", 1, 8, 1, 8, palette.accent, palette.accent2)
 
 local infoHeaderText = Instance.new("TextLabel")
 infoHeaderText.Size = UDim2.new(1, 0, 1, 0)
@@ -526,9 +417,7 @@ infoContent.TextWrapped = true
 infoContent.RichText = true
 infoContent.Parent = rightPanel
 
--- ================================================
--- BOTTOM BUTTONS - OCEAN WAVE STYLE
--- ================================================
+-- Execute button
 local btnRow = Instance.new("Frame")
 btnRow.Name = "Buttons"
 btnRow.Size = UDim2.new(1, -40, 0, 70)
@@ -552,20 +441,7 @@ executeBtn.AutoButtonColor = false
 executeBtn.Parent = btnRow
 mkCorner(executeBtn, 14)
 
-local execGradient = Instance.new("UIGradient")
-execGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, palette.execute),
-    ColorSequenceKeypoint.new(0.5, palette.accent),
-    ColorSequenceKeypoint.new(1, palette.execute)
-})
-execGradient.Rotation = 45
-execGradient.Parent = executeBtn
-
-local execStroke = Instance.new("UIStroke")
-execStroke.Color = palette.accent
-execStroke.Thickness = 2
-execStroke.Parent = executeBtn
-
+-- Blue glow on execute button
 local execGlow = Instance.new("Frame")
 execGlow.Name = "Glow"
 execGlow.Size = UDim2.new(1, 10, 1, 10)
@@ -586,19 +462,11 @@ local cardRefs = {}
 local function selectFeature(feat)
     selectedFeature = feat
     
-    -- Format Info
     infoContent.Text = string.format(
-        "<b>• Required Level:</b> %s\n\n" ..
-        "<b>• Target:</b> %s\n\n" ..
-        "<b>• Map:</b> %s\n\n" ..
-        "<b>• Description:</b> %s",
-        feat.reqLevel,
-        feat.towers,
-        feat.map,
-        feat.desc
+        "<b>• Required Level:</b> %s\n\n<b>• Target:</b> %s\n\n<b>• Map:</b> %s\n\n<b>• Description:</b> %s",
+        feat.reqLevel, feat.towers, feat.map, feat.desc
     )
     
-    -- Update highlights
     for id, card in pairs(cardRefs) do
         if id == feat.id then
             _ts:Create(card, TweenInfo.new(0.2), {BackgroundColor3 = palette.cardHover}):Play()
@@ -614,9 +482,7 @@ local function selectFeature(feat)
     end
 end
 
--- ================================================
--- OCEAN WAVE NOTIFICATIONS
--- ================================================
+-- Access denied popup
 local function showAccessDenied()
     local popup = Instance.new("Frame")
     popup.Size = UDim2.new(0, 480, 0, 180)
@@ -668,24 +534,19 @@ local function showAccessDenied()
     okBtn.Parent = popup
     mkCorner(okBtn, 10)
     
-    local okStroke = Instance.new("UIStroke")
-    okStroke.Color = palette.red
-    okStroke.Thickness = 2
-    okStroke.Parent = okBtn
-
     okBtn.MouseButton1Click:Connect(function()
         _ts:Create(popup, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-            Size = UDim2.new(0, 0, 0, 0),
-            BackgroundTransparency = 1
+            Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1
         }):Play()
         task.delay(0.35, function() popup:Destroy() end)
     end)
 end
 
--- ================================================
--- RENDER FEATURE LIST - OCEAN WAVE CARDS
--- ================================================
-for i, feat in ipairs(featureList) do
+-- Render feature cards
+for i, feat in ipairs({
+    {id = "auto_merge", name = "Auto Merge", desc = "Automatically merge nukes when they are ready.", tier = "premium", reqLevel = "Level 0+", towers = "Any Nuke", map = "Any Map", running = false},
+    {id = "example_free", name = "Example Free Feature", desc = "Free feature accessible to all players.", tier = "free", reqLevel = "Level 0+", towers = "Any", map = "Any", running = false},
+}) do
     local tierColor = (feat.tier == "premium") and palette.gold or palette.accent
     local locked = (feat.tier == "premium" and _tier ~= "Premium")
     
@@ -702,13 +563,9 @@ for i, feat in ipairs(featureList) do
     card.Parent = scrollFrame
     mkCorner(card, 14)
     
-    local cardGradient = Instance.new("UIGradient")
-    cardGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, palette.card),
-        ColorSequenceKeypoint.new(1, palette.cardHover)
-    })
-    cardGradient.Rotation = 90
-    cardGradient.Parent = card
+    -- Blue corner glow on each card
+    createCornerGlow(card, "CGlow" .. i, 0, -8, 0, -8, palette.accent, palette.accent2)
+    createCornerGlow(card, "CGlow2" .. i, 1, 8, 1, 8, palette.accent2, palette.accent)
     
     local cardStroke = Instance.new("UIStroke")
     cardStroke.Color = tierColor
@@ -716,7 +573,6 @@ for i, feat in ipairs(featureList) do
     cardStroke.Transparency = 0.7
     cardStroke.Parent = card
     
-    -- Cyber selection indicator
     local selBar = Instance.new("Frame")
     selBar.Name = "SelectBar"
     selBar.Size = UDim2.new(0, 6, 0.8, 0)
@@ -727,7 +583,6 @@ for i, feat in ipairs(featureList) do
     selBar.Parent = card
     mkCorner(selBar, 4)
     
-    -- Glowing tier indicator
     local dot = Instance.new("Frame")
     dot.Name = "Dot"
     dot.Size = UDim2.new(0, 18, 0, 18)
@@ -738,12 +593,6 @@ for i, feat in ipairs(featureList) do
     dot.Parent = card
     mkCorner(dot, 9)
     
-    local dotStroke = Instance.new("UIStroke")
-    dotStroke.Color = tierColor
-    dotStroke.Thickness = 2
-    dotStroke.Parent = dot
-    
-    -- Feature name with glow
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Size = UDim2.new(1, -65, 0, 30)
     nameLabel.Position = UDim2.new(0, 45, 0, 12)
@@ -753,31 +602,19 @@ for i, feat in ipairs(featureList) do
     nameLabel.TextSize = 18
     nameLabel.Font = Enum.Font.GothamBold
     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-    nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
     nameLabel.Parent = card
     
-    if not locked then
-        local nameStroke = Instance.new("TextStroke")
-        nameStroke.Color = tierColor
-        nameStroke.Thickness = 1
-        nameStroke.Transparency = 0.7
-        nameLabel.TextStroke = nameStroke
-    end
-    
-    -- Description with ocean style
     local descLabel = Instance.new("TextLabel")
     descLabel.Size = UDim2.new(1, -65, 0, 24)
     descLabel.Position = UDim2.new(0, 45, 0, 45)
     descLabel.BackgroundTransparency = 1
-    descLabel.Text = feat.desc:split("\n")[1]
+    descLabel.Text = feat.desc
     descLabel.TextColor3 = palette.textMuted
     descLabel.TextSize = 13
     descLabel.Font = Enum.Font.Gotham
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
-    descLabel.TextTruncate = Enum.TextTruncate.AtEnd
     descLabel.Parent = card
     
-    -- Running indicator with pulse effect
     local runDot = Instance.new("Frame")
     runDot.Name = "RunDot"
     runDot.Size = UDim2.new(0, 12, 0, 12)
@@ -788,41 +625,24 @@ for i, feat in ipairs(featureList) do
     runDot.Parent = card
     mkCorner(runDot, 6)
     
-    local runStroke = Instance.new("UIStroke")
-    runStroke.Color = palette.green
-    runStroke.Thickness = 2
-    runStroke.Parent = runDot
-    
     cardRefs[feat.id] = card
     
-    -- Enhanced hover effects with scale
     card.MouseEnter:Connect(function()
         if selectedFeature ~= feat then
-            _ts:Create(card, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                BackgroundColor3 = palette.cardHover,
-                Size = UDim2.new(1, -5, 0, 98)
-            }):Play()
+            _ts:Create(card, TweenInfo.new(0.2), {BackgroundColor3 = palette.cardHover}):Play()
             cardStroke.Transparency = 0.3
         end
     end)
     card.MouseLeave:Connect(function()
         if selectedFeature ~= feat then
-            _ts:Create(card, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                BackgroundColor3 = palette.card,
-                Size = UDim2.new(1, -10, 0, 95)
-            }):Play()
+            _ts:Create(card, TweenInfo.new(0.2), {BackgroundColor3 = palette.card}):Play()
             cardStroke.Transparency = 0.7
         end
     end)
-    
-    card.MouseButton1Click:Connect(function()
-        selectFeature(feat)
-    end)
+    card.MouseButton1Click:Connect(function() selectFeature(feat) end)
 end
 
--- ================================================
--- EXECUTION & NOTIFICATION - OCEAN WAVE STYLE
--- ================================================
+-- Notification popup
 local function notifyPopup(msg, col)
     local nf = Instance.new("Frame")
     nf.Size = UDim2.new(0, 350, 0, 55)
@@ -833,19 +653,6 @@ local function notifyPopup(msg, col)
     nf.ZIndex = 100
     nf.Parent = mainFrame
     mkCorner(nf, 12)
-    
-    local nfGradient = Instance.new("UIGradient")
-    nfGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, col or palette.accent),
-        ColorSequenceKeypoint.new(1, palette.accent2)
-    })
-    nfGradient.Rotation = 45
-    nfGradient.Parent = nf
-    
-    local nfStroke = Instance.new("UIStroke")
-    nfStroke.Color = col or palette.accent
-    nfStroke.Thickness = 2
-    nfStroke.Parent = nf
     
     local nt = Instance.new("TextLabel")
     nt.Size = UDim2.new(1, 0, 1, 0)
@@ -859,16 +666,15 @@ local function notifyPopup(msg, col)
     _ts:Create(nf, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
         Position = UDim2.new(0.5, -175, 0, 15)
     }):Play()
-    
     task.delay(2.5, function()
         _ts:Create(nf, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {
-            Position = UDim2.new(0.5, -175, 0, -65),
-            BackgroundTransparency = 1
+            Position = UDim2.new(0.5, -175, 0, -65), BackgroundTransparency = 1
         }):Play()
         task.delay(0.35, function() nf:Destroy() end)
     end)
 end
 
+-- Execute button logic
 executeBtn.MouseButton1Click:Connect(function()
     if not selectedFeature then
         notifyPopup("Select a module first!", palette.red)
@@ -877,13 +683,11 @@ executeBtn.MouseButton1Click:Connect(function()
     
     local feat = selectedFeature
     
-    -- Check tier access
     if feat.tier == "premium" and _tier ~= "Premium" then
         showAccessDenied()
         return
     end
     
-    -- Toggle running state
     feat.running = not feat.running
     local card = cardRefs[feat.id]
     if card and card:FindFirstChild("RunDot") then
@@ -892,53 +696,39 @@ executeBtn.MouseButton1Click:Connect(function()
         }):Play()
     end
     
-    -- Execute feature logic
     if feat.id == "auto_merge" then
         if feat.running then
             if AutoMerge.Start then
-                local success = AutoMerge.Start()
-                if success then
+                local s = AutoMerge.Start()
+                if s then
                     notifyPopup("▶ Auto Merge activated", palette.execute)
                 else
                     notifyPopup("Failed to start Auto Merge", palette.red)
                     feat.running = false
-                    if card and card:FindFirstChild("RunDot") then
-                        _ts:Create(card.RunDot, TweenInfo.new(0.2), {
-                            BackgroundTransparency = 1
-                        }):Play()
-                    end
                 end
-            else
-                notifyPopup("Auto Merge module not loaded", palette.red)
-                feat.running = false
             end
         else
             if AutoMerge.Stop then
                 AutoMerge.Stop()
                 local info = AutoMerge.GetInfo and AutoMerge.GetInfo() or {}
-                notifyPopup("⏹ Auto Merge stopped! Merged: " .. (info.MergedCount or 0), palette.close)
+                notifyPopup("⏹ Stopped! Merged: " .. (info.MergedCount or 0), palette.close)
             end
         end
     else
-        -- Other features
-        if feat.running then
-            notifyPopup("▶ " .. feat.name .. " activated", palette.execute)
-        else
-            notifyPopup("⏹ " .. feat.name .. " stopped", palette.close)
-        end
+        notifyPopup((feat.running and "▶ " or "⏹ ") .. feat.name .. (feat.running and " activated" or " stopped"), feat.running and palette.execute or palette.close)
     end
 end)
 
--- Enhanced hover effects for buttons
+-- Hover for buttons
 for _, btn in pairs({closeBtn, executeBtn}) do
     btn.MouseEnter:Connect(function()
-        _ts:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+        _ts:Create(btn, TweenInfo.new(0.2), {
             BackgroundTransparency = 0.1,
             Size = (btn == executeBtn) and UDim2.new(1, 5, 1, 5) or UDim2.new(0, 38, 0, 38)
         }):Play()
     end)
     btn.MouseLeave:Connect(function()
-        _ts:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+        _ts:Create(btn, TweenInfo.new(0.2), {
             BackgroundTransparency = 0.3,
             Size = (btn == executeBtn) and UDim2.new(1, 0, 1, 0) or UDim2.new(0, 36, 0, 36)
         }):Play()
@@ -947,19 +737,15 @@ end
 
 closeBtn.MouseButton1Click:Connect(function()
     _activeLoops = {}
-    if AutoMerge.Stop then
-        AutoMerge.Stop()
-    end
+    if AutoMerge.Stop then AutoMerge.Stop() end
     scanlineTween:Cancel()
     _ts:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Rotation = -180,
-        BackgroundTransparency = 1
+        Size = UDim2.new(0, 0, 0, 0), Rotation = -180, BackgroundTransparency = 1
     }):Play()
     task.delay(0.55, function() screenGui:Destroy() end)
 end)
 
--- Toggle keybind RightControl
+-- Toggle keybind
 local _visible = true
 _uis.InputBegan:Connect(function(inp, gp)
     if gp then return end
@@ -970,4 +756,4 @@ _uis.InputBegan:Connect(function(inp, gp)
 end)
 
 -- Default selection
-selectFeature(featureList[1])
+selectFeature({id = "auto_merge", name = "Auto Merge", desc = "Automatically merge nukes.", tier = "premium", reqLevel = "Level 0+", towers = "Any Nuke", map = "Any Map", running = false})

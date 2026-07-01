@@ -128,9 +128,6 @@ mainFrame.ClipsDescendants = false
 mainFrame.Parent = screenGui
 mkCorner(mainFrame, 16)
 
--- Neon glow border effect
-local borderGlow = mkStroke(mainFrame, palette.accent, 2)
-
 -- Corner light effects at 4 corners (Cyan + Aqua, extending outward)
 local function createCornerGlow(name, xScale, xOff, yScale, yOff, color1, color2)
     -- Layer 1 (besar)
