@@ -843,7 +843,7 @@ addLog("Tier: " .. _tier)
 addLog("Features ready")
 
 -- Expose for external control
-getgenv().BorcaSellLemons = {
+getgenv().OceanSellLemons = {
     GetState = function()
         return {
             features = features,

@@ -18,7 +18,7 @@ local Macro = {}
 -- ================================================
 -- PERSISTENT STORAGE (survives map changes)
 -- ================================================
-_G.BorcaMacro = _G.BorcaMacro or {
+_G.OceanMacro = _G.OceanMacro or {
     IsRecording = false,
     IsPlaying = false,
     StartTime = 0,
@@ -162,17 +162,17 @@ function MapChangeDetector:GetCurrentMapName()
 end
 
 function MapChangeDetector:OnMapChanged(reason)
-    _G.BorcaMacro.MapChangeCount = _G.BorcaMacro.MapChangeCount + 1
+    _G.OceanMacro.MapChangeCount = _G.OceanMacro.MapChangeCount + 1
     RefreshServiceCache()
-    warn("[Macro] Map change #" .. _G.BorcaMacro.MapChangeCount .. ": " .. reason)
+    warn("[Macro] Map change #" .. _G.OceanMacro.MapChangeCount .. ": " .. reason)
     
     -- Record map change if recording
-    if _G.BorcaMacro.IsRecording then
-        local elapsedTime = tick() - _G.BorcaMacro.StartTime - _G.BorcaMacro.TotalPausedDuration
-        table.insert(_G.BorcaMacro.RecordedActions, {
+    if _G.OceanMacro.IsRecording then
+        local elapsedTime = tick() - _G.OceanMacro.StartTime - _G.OceanMacro.TotalPausedDuration
+        table.insert(_G.OceanMacro.RecordedActions, {
             Type = ActionTypes.MAP_CHANGE,
             Time = elapsedTime,
-            MapChangeNumber = _G.BorcaMacro.MapChangeCount,
+            MapChangeNumber = _G.OceanMacro.MapChangeCount,
             Reason = reason,
         })
     end
@@ -195,12 +195,12 @@ function MapChangeDetector:OnMapChanged(reason)
     
     -- Update UI
     if Macro.UI and Macro.UI.Enabled then
-        Macro.UI:UpdateMapInfo(_G.BorcaMacro.MapChangeCount)
+        Macro.UI:UpdateMapInfo(_G.OceanMacro.MapChangeCount)
     end
     
     -- Auto-save (FIXED: use callback to check result)
-    if Macro.Config.SaveOnMapChange and #_G.BorcaMacro.RecordedActions > 0 then
-        Macro.SaveMacro("autosave_map" .. _G.BorcaMacro.MapChangeCount)
+    if Macro.Config.SaveOnMapChange and #_G.OceanMacro.RecordedActions > 0 then
+        Macro.SaveMacro("autosave_map" .. _G.OceanMacro.MapChangeCount)
     end
 end
 
@@ -225,7 +225,7 @@ function Macro.UI:Create()
     if self.Frame then self.Frame.Visible = true; self.Enabled = true; return end
     
     local gui = Instance.new("ScreenGui")
-    gui.Name = "BorcaMacroUI"
+    gui.Name = "OceanMacroUI"
     gui.ResetOnSpawn = false  -- CRITICAL: survives map change!
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     gui.Parent = CoreGui
@@ -253,7 +253,7 @@ function Macro.UI:Create()
     
     local title = Instance.new("TextLabel", titleBar)
     title.Name = "Title"; title.Size = UDim2.new(1, -10, 1, 0); title.Position = UDim2.new(0, 10, 0, 0)
-    title.BackgroundTransparency = 1; title.Text = "⚡ Borca Macro"
+    title.BackgroundTransparency = 1; title.Text = "⚡ Ocean Macro"
     title.TextColor3 = Macro.Config.UIColors.Accent; title.TextSize = 14; title.Font = Enum.Font.GothamBold
     title.TextXAlignment = Enum.TextXAlignment.Left
     
@@ -317,12 +317,12 @@ end
 
 function Macro.UI:UpdateInfo()
     if not self.Elements.InfoLabels then return end
-    local actions = #_G.BorcaMacro.RecordedActions
-    local duration = actions > 0 and _G.BorcaMacro.RecordedActions[actions].Time or 0
+    local actions = #_G.OceanMacro.RecordedActions
+    local duration = actions > 0 and _G.OceanMacro.RecordedActions[actions].Time or 0
     local m = math.floor(duration / 60); local s = math.floor(duration % 60)
     self.Elements.InfoLabels.actions.Text = "Actions: <b>" .. actions .. "</b>"
     self.Elements.InfoLabels.duration.Text = "Duration: <b>" .. string.format("%d:%02d", m, s) .. "</b>"
-    self.Elements.InfoLabels.mapChanges.Text = "Map Changes: <b>" .. _G.BorcaMacro.MapChangeCount .. "</b>"
+    self.Elements.InfoLabels.mapChanges.Text = "Map Changes: <b>" .. _G.OceanMacro.MapChangeCount .. "</b>"
 end
 
 function Macro.UI:UpdateMapInfo(count)
@@ -357,22 +357,22 @@ local function SetupKeybinds()
         if processed then return end
         local key = input.KeyCode
         if key == Macro.Config.Keybinds.ToggleRecording then
-            if _G.BorcaMacro.IsRecording then Macro.StopRecording() else Macro.StartRecording() end
+            if _G.OceanMacro.IsRecording then Macro.StopRecording() else Macro.StartRecording() end
         elseif key == Macro.Config.Keybinds.TogglePlayback then
-            if _G.BorcaMacro.IsPlaying then Macro.StopPlayback() else Macro.StartPlayback() end
+            if _G.OceanMacro.IsPlaying then Macro.StopPlayback() else Macro.StartPlayback() end
         elseif key == Macro.Config.Keybinds.StopAll then
             Macro.StopRecording(); Macro.StopPlayback()
         elseif key == Macro.Config.Keybinds.SkipWave then
             Macro.RecordSkipWave()
         elseif key == Macro.Config.Keybinds.PauseResume then
-            if _G.BorcaMacro.IsRecording then
-                _G.BorcaMacro.IsPaused = not _G.BorcaMacro.IsPaused
-                if _G.BorcaMacro.IsPaused then
-                    _G.BorcaMacro.PauseTime = tick()
+            if _G.OceanMacro.IsRecording then
+                _G.OceanMacro.IsPaused = not _G.OceanMacro.IsPaused
+                if _G.OceanMacro.IsPaused then
+                    _G.OceanMacro.PauseTime = tick()
                     if Macro.UI.Enabled then Macro.UI:UpdateStatus("⏸ Paused", Macro.Config.UIColors.Warning) end
                     warn("[Macro] Recording paused")
                 else
-                    _G.BorcaMacro.TotalPausedDuration = _G.BorcaMacro.TotalPausedDuration + (tick() - _G.BorcaMacro.PauseTime)
+                    _G.OceanMacro.TotalPausedDuration = _G.OceanMacro.TotalPausedDuration + (tick() - _G.OceanMacro.PauseTime)
                     if Macro.UI.Enabled then Macro.UI:UpdateStatus("Recording", Macro.Config.UIColors.Recording) end
                     warn("[Macro] Recording resumed")
                 end
@@ -411,15 +411,15 @@ end
 -- RECORDING FUNCTIONS
 -- ================================================
 function Macro.StartRecording()
-    if _G.BorcaMacro.IsRecording then warn("[Macro] Already recording!"); return false end
+    if _G.OceanMacro.IsRecording then warn("[Macro] Already recording!"); return false end
     
-    _G.BorcaMacro.IsRecording = true
-    _G.BorcaMacro.IsPlaying = false
-    _G.BorcaMacro.StartTime = tick()
-    _G.BorcaMacro.TotalPausedDuration = 0
-    _G.BorcaMacro.IsPaused = false
-    _G.BorcaMacro.MapChangeCount = 0
-    _G.BorcaMacro.RecordedActions = {}
+    _G.OceanMacro.IsRecording = true
+    _G.OceanMacro.IsPlaying = false
+    _G.OceanMacro.StartTime = tick()
+    _G.OceanMacro.TotalPausedDuration = 0
+    _G.OceanMacro.IsPaused = false
+    _G.OceanMacro.MapChangeCount = 0
+    _G.OceanMacro.RecordedActions = {}
     
     if Macro.UI.Enabled then Macro.UI:UpdateStatus("Recording", Macro.Config.UIColors.Recording) end
     warn("[Macro] Recording started")
@@ -427,11 +427,11 @@ function Macro.StartRecording()
 end
 
 function Macro.StopRecording()
-    if not _G.BorcaMacro.IsRecording then warn("[Macro] Not recording!"); return false end
+    if not _G.OceanMacro.IsRecording then warn("[Macro] Not recording!"); return false end
     
-    _G.BorcaMacro.IsRecording = false
-    _G.BorcaMacro.IsPaused = false
-    local count = #_G.BorcaMacro.RecordedActions
+    _G.OceanMacro.IsRecording = false
+    _G.OceanMacro.IsPaused = false
+    local count = #_G.OceanMacro.RecordedActions
     
     if Macro.UI.Enabled then
         Macro.UI:UpdateStatus("Saved (" .. count .. " actions)", Macro.Config.UIColors.Accent)
@@ -443,9 +443,9 @@ function Macro.StopRecording()
 end
 
 function Macro.RecordPlaceTower(towerName, position)
-    if not _G.BorcaMacro.IsRecording or _G.BorcaMacro.IsPaused then return false end
-    local elapsedTime = tick() - _G.BorcaMacro.StartTime - _G.BorcaMacro.TotalPausedDuration
-    table.insert(_G.BorcaMacro.RecordedActions, {
+    if not _G.OceanMacro.IsRecording or _G.OceanMacro.IsPaused then return false end
+    local elapsedTime = tick() - _G.OceanMacro.StartTime - _G.OceanMacro.TotalPausedDuration
+    table.insert(_G.OceanMacro.RecordedActions, {
         Type = ActionTypes.PLACE_TOWER, Time = elapsedTime,
         TowerName = towerName, Position = position,
     })
@@ -454,9 +454,9 @@ function Macro.RecordPlaceTower(towerName, position)
 end
 
 function Macro.RecordUpgradeTower(towerIndex, upgradeLevel)
-    if not _G.BorcaMacro.IsRecording or _G.BorcaMacro.IsPaused then return false end
-    local elapsedTime = tick() - _G.BorcaMacro.StartTime - _G.BorcaMacro.TotalPausedDuration
-    table.insert(_G.BorcaMacro.RecordedActions, {
+    if not _G.OceanMacro.IsRecording or _G.OceanMacro.IsPaused then return false end
+    local elapsedTime = tick() - _G.OceanMacro.StartTime - _G.OceanMacro.TotalPausedDuration
+    table.insert(_G.OceanMacro.RecordedActions, {
         Type = ActionTypes.UPGRADE_TOWER, Time = elapsedTime,
         TowerIndex = towerIndex, UpgradeLevel = upgradeLevel,
     })
@@ -465,9 +465,9 @@ function Macro.RecordUpgradeTower(towerIndex, upgradeLevel)
 end
 
 function Macro.RecordSellTower(towerIndex)
-    if not _G.BorcaMacro.IsRecording or _G.BorcaMacro.IsPaused then return false end
-    local elapsedTime = tick() - _G.BorcaMacro.StartTime - _G.BorcaMacro.TotalPausedDuration
-    table.insert(_G.BorcaMacro.RecordedActions, {
+    if not _G.OceanMacro.IsRecording or _G.OceanMacro.IsPaused then return false end
+    local elapsedTime = tick() - _G.OceanMacro.StartTime - _G.OceanMacro.TotalPausedDuration
+    table.insert(_G.OceanMacro.RecordedActions, {
         Type = ActionTypes.SELL_TOWER, Time = elapsedTime, TowerIndex = towerIndex,
     })
     warn("[Macro] 💰 Sell tower " .. towerIndex .. " (t=" .. string.format("%.2f", elapsedTime) .. "s)")
@@ -475,9 +475,9 @@ function Macro.RecordSellTower(towerIndex)
 end
 
 function Macro.RecordSkipWave()
-    if not _G.BorcaMacro.IsRecording or _G.BorcaMacro.IsPaused then return false end
-    local elapsedTime = tick() - _G.BorcaMacro.StartTime - _G.BorcaMacro.TotalPausedDuration
-    table.insert(_G.BorcaMacro.RecordedActions, {
+    if not _G.OceanMacro.IsRecording or _G.OceanMacro.IsPaused then return false end
+    local elapsedTime = tick() - _G.OceanMacro.StartTime - _G.OceanMacro.TotalPausedDuration
+    table.insert(_G.OceanMacro.RecordedActions, {
         Type = ActionTypes.SKIP_WAVE, Time = elapsedTime,
     })
     warn("[Macro] ⏭ Skip wave (t=" .. string.format("%.2f", elapsedTime) .. "s)")
@@ -485,9 +485,9 @@ function Macro.RecordSkipWave()
 end
 
 function Macro.RecordAbility(towerIndex, abilityIndex)
-    if not _G.BorcaMacro.IsRecording or _G.BorcaMacro.IsPaused then return false end
-    local elapsedTime = tick() - _G.BorcaMacro.StartTime - _G.BorcaMacro.TotalPausedDuration
-    table.insert(_G.BorcaMacro.RecordedActions, {
+    if not _G.OceanMacro.IsRecording or _G.OceanMacro.IsPaused then return false end
+    local elapsedTime = tick() - _G.OceanMacro.StartTime - _G.OceanMacro.TotalPausedDuration
+    table.insert(_G.OceanMacro.RecordedActions, {
         Type = ActionTypes.ABILITY, Time = elapsedTime,
         TowerIndex = towerIndex, AbilityIndex = abilityIndex,
     })
@@ -499,23 +499,23 @@ end
 -- PLAYBACK FUNCTIONS
 -- ================================================
 function Macro.StartPlayback()
-    if _G.BorcaMacro.IsPlaying then warn("[Macro] Already playing!"); return false end
-    if #_G.BorcaMacro.RecordedActions == 0 then warn("[Macro] No recorded actions!"); return false end
+    if _G.OceanMacro.IsPlaying then warn("[Macro] Already playing!"); return false end
+    if #_G.OceanMacro.RecordedActions == 0 then warn("[Macro] No recorded actions!"); return false end
     
-    _G.BorcaMacro.IsPlaying = true
-    _G.BorcaMacro.IsRecording = false
-    _G.BorcaMacro.CurrentActionIndex = 1
-    _G.BorcaMacro.StartTime = tick()
+    _G.OceanMacro.IsPlaying = true
+    _G.OceanMacro.IsRecording = false
+    _G.OceanMacro.CurrentActionIndex = 1
+    _G.OceanMacro.StartTime = tick()
     
     if Macro.UI.Enabled then Macro.UI:UpdateStatus("Playing", Macro.Config.UIColors.Playing) end
-    warn("[Macro] ▶ Playback started (" .. #_G.BorcaMacro.RecordedActions .. " actions)")
+    warn("[Macro] ▶ Playback started (" .. #_G.OceanMacro.RecordedActions .. " actions)")
     task.spawn(Macro.PlaybackLoop)
     return true
 end
 
 function Macro.StopPlayback()
-    if not _G.BorcaMacro.IsPlaying then return false end
-    _G.BorcaMacro.IsPlaying = false
+    if not _G.OceanMacro.IsPlaying then return false end
+    _G.OceanMacro.IsPlaying = false
     if Macro.UI.Enabled then
         Macro.UI:UpdateStatus("Stopped", Macro.Config.UIColors.Warning)
         task.wait(1)
@@ -526,22 +526,22 @@ function Macro.StopPlayback()
 end
 
 function Macro.PlaybackLoop()
-    while _G.BorcaMacro.IsPlaying do
-        local currentTime = (tick() - _G.BorcaMacro.StartTime) * Macro.Config.PlaybackSpeed
+    while _G.OceanMacro.IsPlaying do
+        local currentTime = (tick() - _G.OceanMacro.StartTime) * Macro.Config.PlaybackSpeed
         
-        while _G.BorcaMacro.CurrentActionIndex <= #_G.BorcaMacro.RecordedActions do
-            local action = _G.BorcaMacro.RecordedActions[_G.BorcaMacro.CurrentActionIndex]
+        while _G.OceanMacro.CurrentActionIndex <= #_G.OceanMacro.RecordedActions do
+            local action = _G.OceanMacro.RecordedActions[_G.OceanMacro.CurrentActionIndex]
             if action.Time <= currentTime then
                 if action.Type ~= ActionTypes.MAP_CHANGE then Macro.ExecuteAction(action) end
-                _G.BorcaMacro.CurrentActionIndex = _G.BorcaMacro.CurrentActionIndex + 1
+                _G.OceanMacro.CurrentActionIndex = _G.OceanMacro.CurrentActionIndex + 1
             else break end
         end
         
-        if _G.BorcaMacro.CurrentActionIndex > #_G.BorcaMacro.RecordedActions then
+        if _G.OceanMacro.CurrentActionIndex > #_G.OceanMacro.RecordedActions then
             warn("[Macro] ✅ Playback completed")
             if Macro.Config.LoopMacro then
-                _G.BorcaMacro.CurrentActionIndex = 1
-                _G.BorcaMacro.StartTime = tick()
+                _G.OceanMacro.CurrentActionIndex = 1
+                _G.OceanMacro.StartTime = tick()
                 warn("[Macro] 🔄 Looping...")
             else Macro.StopPlayback(); break end
         end
@@ -606,10 +606,10 @@ end
 -- MACRO MANAGEMENT
 -- ================================================
 function Macro.SaveMacro(name)
-    local data = { Actions = _G.BorcaMacro.RecordedActions, Config = Macro.Config, MapChangeCount = _G.BorcaMacro.MapChangeCount }
+    local data = { Actions = _G.OceanMacro.RecordedActions, Config = Macro.Config, MapChangeCount = _G.OceanMacro.MapChangeCount }
     local ok, err = pcall(function()
         if writefile then
-            writefile("borcahub_tds_macro_" .. name .. ".json", HttpService:JSONEncode(data))
+            writefile("oceanhub_tds_macro_" .. name .. ".json", HttpService:JSONEncode(data))
             return true
         end
         return false, "writefile not available"
@@ -624,14 +624,14 @@ end
 
 function Macro.LoadMacro(name)
     local ok, data = pcall(function()
-        if readfile then return HttpService:JSONDecode(readfile("borcahub_tds_macro_" .. name .. ".json")) end
+        if readfile then return HttpService:JSONDecode(readfile("oceanhub_tds_macro_" .. name .. ".json")) end
         return nil
     end)
     if ok and data then
-        _G.BorcaMacro.RecordedActions = data.Actions or {}
-        _G.BorcaMacro.MapChangeCount = data.MapChangeCount or 0
+        _G.OceanMacro.RecordedActions = data.Actions or {}
+        _G.OceanMacro.MapChangeCount = data.MapChangeCount or 0
         Macro.Config = data.Config or Macro.Config
-        warn("[Macro] 📂 Loaded: " .. name .. " (" .. #_G.BorcaMacro.RecordedActions .. " actions)")
+        warn("[Macro] 📂 Loaded: " .. name .. " (" .. #_G.OceanMacro.RecordedActions .. " actions)")
         return true
     end
     warn("[Macro] ❌ Failed to load: " .. name)
@@ -639,18 +639,18 @@ function Macro.LoadMacro(name)
 end
 
 function Macro.ClearMacro()
-    _G.BorcaMacro.RecordedActions = {}
-    _G.BorcaMacro.MapChangeCount = 0
+    _G.OceanMacro.RecordedActions = {}
+    _G.OceanMacro.MapChangeCount = 0
     warn("[Macro] 🗑 Cleared")
 end
 
 function Macro.GetMacroInfo()
-    local actions = _G.BorcaMacro.RecordedActions
+    local actions = _G.OceanMacro.RecordedActions
     return {
-        IsRecording = _G.BorcaMacro.IsRecording, IsPlaying = _G.BorcaMacro.IsPlaying,
-        IsPaused = _G.BorcaMacro.IsPaused, ActionCount = #actions,
+        IsRecording = _G.OceanMacro.IsRecording, IsPlaying = _G.OceanMacro.IsPlaying,
+        IsPaused = _G.OceanMacro.IsPaused, ActionCount = #actions,
         Duration = actions[#actions] and actions[#actions].Time or 0,
-        MapChangeCount = _G.BorcaMacro.MapChangeCount,
+        MapChangeCount = _G.OceanMacro.MapChangeCount,
     }
 end
 
@@ -659,7 +659,7 @@ end
 -- ================================================
 function Macro.Init()
     if Macro.Config.ShowUI then Macro.UI:Create(); StartUIUpdateLoop() end
-    _G.BorcaMacro.InputConnection = SetupKeybinds()
+    _G.OceanMacro.InputConnection = SetupKeybinds()
     MapChangeDetector:Start()
     warn("[Macro] ✅ System ready - Map persistence ACTIVE")
     warn("[Macro] Controls: F6=Record  F7=Play  F8=Stop  F9=Skip  F10=Pause")
@@ -667,7 +667,7 @@ end
 
 function Macro.Cleanup()
     Macro.StopRecording(); Macro.StopPlayback(); MapChangeDetector:Stop()
-    if _G.BorcaMacro.InputConnection then _G.BorcaMacro.InputConnection:Disconnect(); _G.BorcaMacro.InputConnection = nil end
+    if _G.OceanMacro.InputConnection then _G.OceanMacro.InputConnection:Disconnect(); _G.OceanMacro.InputConnection = nil end
     Macro.UI:Destroy()
 end
 

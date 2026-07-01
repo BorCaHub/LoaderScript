@@ -11,7 +11,7 @@ local _rs  = game:GetService("RunService")
 local _http = game:GetService("HttpService")
 
 -- Macro system state (local for Main.lua hook-based recording)
--- This is SEPARATE from _G.BorcaMacro used by recorder v1.lua
+-- This is SEPARATE from _G.OceanMacro used by recorder v1.lua
 local _recording = false
 local _replaying = false
 local _startTick = 0
